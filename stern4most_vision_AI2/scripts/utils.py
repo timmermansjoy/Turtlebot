@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 curvelist = []
-avgVal = 10
+avgVal = 2
 
 def thresholding(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
