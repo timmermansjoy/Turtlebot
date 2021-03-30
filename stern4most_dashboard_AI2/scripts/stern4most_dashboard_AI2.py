@@ -86,7 +86,7 @@ class stern4most_dashboard_AI2(QWidget):
         self.stop_button = QPushButton("STOP")
         self.stop_button.clicked.connect(self.stop_button_clicked)
 
-        self.autonomous_button = QPushButton("go turtle go")
+        self.autonomous_button = QPushButton("GO TURTLE GOOO")
         self.autonomous_button.clicked.connect(self.autonomous_button_clicked)
 
         button_layout.addWidget(self.forward_button, 0, 1)
