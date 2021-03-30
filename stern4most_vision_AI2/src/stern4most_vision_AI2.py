@@ -4,6 +4,8 @@ import rospy
 import time
 
 from sensor_msgs.msg import Image
+from geometry_msgs.msg import Twist
+from std_msgs.msg import Bool
 from threading import Lock
 
 import cv2
@@ -19,10 +21,14 @@ class Stern4most_vision_AI2:
     
     def __init__(self):
         self.running = True
-        self.subVideo   = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
-
+        self.video_sub   = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
+        self.manual_autonomous_sub = rospy.Subscriber('manual_autonomous', Bool, self.callback_manual_autonomous)
+        self.controller_pub = rospy.Publisher('controller', Twist, queue_size=10)
+        self.vel = Twist()
+        self.vel.linear.x = 0.10
+        self.is_autonomous = False
         self.bridge = CvBridge()
-
+        self.rate = rospy.Rate(10)
         self.image = None
         self.imageLock = Lock()
 
@@ -50,7 +56,11 @@ class Stern4most_vision_AI2:
                 image_cv = self.convert_ros_to_opencv(self.image)
             finally:
                 self.imageLock.release()
-            utils.getLaneCurve(image_cv, 1)
+            image_cv = cv2.resize(image_cv, dsize=(770, 434), interpolation=cv2.INTER_CUBIC)
+            self.vel.angular.z = utils.getLaneCurve(image_cv, 0)
+            if self.is_autonomous:
+                self.controller_pub.publish(self.vel)
+                self.rate.sleep()
 
             key = cv2.waitKey(5)
             if key == 27: # Esc key top stop
@@ -63,6 +73,9 @@ class Stern4most_vision_AI2:
             self.image = data
         finally:
             self.imageLock.release()
+    
+    def callback_manual_autonomous(self, msg):
+        self.is_autonomous = not msg.data
 
 
 if __name__=='__main__':

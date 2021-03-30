@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 curvelist = []
-avgVal = 10
+avgVal = 15
 
 
 def thresholding(img):
