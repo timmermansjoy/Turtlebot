@@ -16,7 +16,6 @@ if __name__ == '__main__':
     pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
     controller_sub = rospy.Subscriber(controller_topic, Twist, callback_controller)
     rate = rospy.Rate(10)
-
     vel = Twist()
 
     rospy.spin()

@@ -4,8 +4,7 @@ import cv2
 import numpy as np
 
 curvelist = []
-avgVal = 15
-
+avgVal = 10
 
 def thresholding(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -25,7 +24,6 @@ def warpImg(img, points, w, h, inv=False):
 
     imgWarp = cv2.warpPerspective(img, matrix, (w, h))
     return imgWarp
-
 
 def valTrackbars(points, wT=770, hT=434):
     widthTop = points[0]
@@ -93,6 +91,10 @@ def stackImages(scale, imgArray):
         ver = hor
     return ver
 
+def drawPoints(img, points):
+    for x in range(0, 4):
+        cv2.circle(img, (int(points[x][0]), int(points[x][1])), 15, (0, 0, 255), cv2.FILLED)
+    return img
 
 def getLaneCurve(img, display=2):
 
@@ -103,9 +105,10 @@ def getLaneCurve(img, display=2):
 
     # step 2 warp image to points of intrest
     hT, wT, c = img.shape
-    pointOfIntrest = [214, 223, 0, 393]
+    pointOfIntrest = [270, 340, 0, 550]
     points = valTrackbars(pointOfIntrest)
     imgWarp = warpImg(imgThres, points, wT, hT)
+    imgWarpPoints = drawPoints(img, points)
 
     # step 3 get curvature of line in image
     midPoint, imgHist = getHistogram(imgWarp, display=True, minPer=0.5, region=4)
@@ -136,7 +139,7 @@ def getLaneCurve(img, display=2):
             cv2.line(imgResult, (w * x + int(curve//50), midY-10), (w * x + int(curve//50), midY+10), (0, 0, 255), 2)
 
     if display == 2:
-        imgStacked = stackImages(0.7, ([img, imgWarp, img],
+        imgStacked = stackImages(0.7, ([img, imgWarp, imgWarpPoints],
                                        [imgHist, imgLaneColor, imgResult]))
         cv2.imshow('ImageStack', imgStacked)
 

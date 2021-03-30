@@ -25,7 +25,7 @@ class Stern4most_vision_AI2:
         self.manual_autonomous_sub = rospy.Subscriber('manual_autonomous', Bool, self.callback_manual_autonomous)
         self.controller_pub = rospy.Publisher('controller', Twist, queue_size=10)
         self.vel = Twist()
-        self.vel.linear.x = 0.10
+        self.vel.linear.x = 0.22
         self.is_autonomous = False
         self.bridge = CvBridge()
         self.rate = rospy.Rate(10)
@@ -56,8 +56,8 @@ class Stern4most_vision_AI2:
                 image_cv = self.convert_ros_to_opencv(self.image)
             finally:
                 self.imageLock.release()
-            image_cv = cv2.resize(image_cv, dsize=(770, 434), interpolation=cv2.INTER_CUBIC)
-            self.vel.angular.z = utils.getLaneCurve(image_cv, 0)
+            image_cv = cv2.resize(image_cv, dsize=(800,550), interpolation=cv2.INTER_CUBIC)
+            self.vel.angular.z = utils.getLaneCurve(image_cv,0) * -1
             if self.is_autonomous:
                 self.controller_pub.publish(self.vel)
                 self.rate.sleep()
@@ -85,3 +85,5 @@ if __name__=='__main__':
 
     while display.is_running():
         time.sleep(5)
+
+    rospy.spin()
