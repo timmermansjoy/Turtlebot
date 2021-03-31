@@ -29,7 +29,7 @@ class stern4most_dashboard_AI2(QWidget):
     def __init__(self):
         super(stern4most_dashboard_AI2, self).__init__()
         topic_name = "controller"
-        self.is_manual = True
+        self.is_autonomous = False
         self.bridge = CvBridge()
         self.init_subscriber()
 
@@ -169,7 +169,7 @@ class stern4most_dashboard_AI2(QWidget):
         self.move_waffle(0, -0.02)
 
     def move_waffle(self, line_vel, ang_vel):
-        if self.is_manual:
+        if not self.is_autonomous:
             if self.vel.linear.x + line_vel <= 0.22:
                 self.vel.linear.x += line_vel
             else:
@@ -189,8 +189,8 @@ class stern4most_dashboard_AI2(QWidget):
             pass
 
     def autonomous_button_clicked(self):
-        self.is_manual = not(self.is_manual)
-        self.msg.data = self.is_manual
+        self.is_autonomous = not(self.is_autonomous)
+        self.msg.data = self.is_autonomous
         print(self.msg)
         print(self.msg.data)
         logging.info('advertising to topic manual_autonomous with value ' + str(self.msg.data))
