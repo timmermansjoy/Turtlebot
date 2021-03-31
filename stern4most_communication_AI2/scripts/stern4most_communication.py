@@ -9,7 +9,7 @@ NAAM = "AI2"
 
 
 def callback_game_on(msg):
-    rospy.loginfo('received message from referee: ', msg)
+    rospy.loginfo('received message from referee: ' + str(msg.data))
     if msg.data == 'Start':
         rospy.loginfo('publishing to topic manual_autonomous')
         start_message.data = True
@@ -40,5 +40,4 @@ if __name__ == '__main__':
     ranking_sub = rospy.Subscriber('ranking',String, callback_ranking)
     rospy.loginfo('subscribed to topic ranking')
     start_message = Bool()
-
     rospy.spin()
