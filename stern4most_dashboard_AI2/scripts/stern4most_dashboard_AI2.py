@@ -34,9 +34,9 @@ class stern4most_dashboard_AI2(QWidget):
         self.init_subscriber()
 
         self.controller_pub = rospy.Publisher('controller', Twist, queue_size = 10)
-        logging.loginfo('created publisher for topic controller')
+        logging.info('created publisher for topic controller')
         self.manual_autonomous_pub = rospy.Publisher('manual_autonomous', Bool, queue_size=10)
-        logging.loginfo('created publisher for topic manual_autonomous')
+        logging.info('created publisher for topic manual_autonomous')
         self.rate = rospy.Rate(10)
         self.vel = Twist()
         self.msg = Bool()
@@ -56,7 +56,7 @@ class stern4most_dashboard_AI2(QWidget):
 
         # Start to listen...
         self.subscriber = rospy.Subscriber("/camera/rgb/image_raw", Image, self.callback_image_raw)
-        logging.loginfo('subscribed to topic /camera/rgb/image_raw')
+        logging.info('subscribed to topic /camera/rgb/image_raw')
 
 
     def init_gui(self):
@@ -182,7 +182,7 @@ class stern4most_dashboard_AI2(QWidget):
                 self.vel.angular.z += ang_vel
             else:
                 self.vel.angular.z = 0.22
-            logging.loginfo('advertising to topic controller with linear x value ' + str(self.vel.linear.x) + ' and angular z value of ' + str(self.vel.angular.z))
+            logging.info('advertising to topic controller with linear x value ' + str(self.vel.linear.x) + ' and angular z value of ' + str(self.vel.angular.z))
             self.controller_pub.publish(self.vel)
             self.rate.sleep()
         else:
@@ -193,7 +193,7 @@ class stern4most_dashboard_AI2(QWidget):
         self.msg.data = self.is_manual
         print(self.msg)
         print(self.msg.data)
-        logging.loginfo('advertising to topic manual_autonomous with value ' + str(self.msg.data))
+        logging.info('advertising to topic manual_autonomous with value ' + str(self.msg.data))
         self.manual_autonomous_pub.publish(self.msg)
 
 
