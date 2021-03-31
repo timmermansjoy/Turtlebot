@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
 <launch>
-<?xml version="1.0"?>
-<launch>
   <env name="GAZEBO_MODEL_PATH" value="$(find sternformost)/models:$GAZEBO_MODEL_PATH" />
 
   <arg name="x_pos" default="0.7"/>
