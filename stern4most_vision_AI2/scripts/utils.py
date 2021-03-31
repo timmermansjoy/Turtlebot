@@ -6,6 +6,25 @@ import numpy as np
 curvelist = []
 avgVal = 2
 
+def checkPoint(img):
+    #transform image (get bottom of image)
+    wT, hT, c = img.shape
+    pointOfIntrest = [214, 405, 0, 400]
+    points = valTrackbars(pointOfIntrest)
+    imgCheckpoint = warpImg(img, points, wT, hT)
+
+    #detect color
+    hsv = cv2.cvtColor(imgCheckpoint, cv2.COLOR_BGR2HSV)
+    upper_val = np.array([41, 255, 255])
+    lower_val = np.array([21, 100, 100])
+    mask = cv2.inRange(hsv, lower_val, upper_val)
+
+    #return if it has yellow in image
+    hasYellow = np.sum(mask)
+    if hasYellow > 0:
+        return True
+    return False
+
 def thresholding(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     lowerWhite = np.array([0, 0, 100])

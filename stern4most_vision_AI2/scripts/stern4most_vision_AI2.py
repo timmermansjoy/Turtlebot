@@ -23,14 +23,16 @@ class Stern4most_vision_AI2:
     def __init__(self):
         self.running = True
         self.video_sub   = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
-        logging.info('subscribed to topic /camera/rgb/image_raw')
-        self.manual_autonomous_sub = rospy.Subscriber('manual_autonomous', Bool, self.callback_manual_autonomous)
-        logging.info('subscribed to topic manual_autonomous')
-        self.controller_pub = rospy.Publisher('controller', Twist, queue_size=10)
-        logging.info('created publisher for topic controller')
+        rospy.loginfo('subscribed to topic /camera/rgb/image_raw')
+        self.topic_name = 'autonomous_controller'
+        self.controller_pub = rospy.Publisher(self.topic_name, Twist, queue_size=10)
+        rospy.loginfo('created publisher for topic autonomous_controller')
+        self.sector_crossed_pub = rospy.Publisher('sector_crossed', Bool, queue_size=10)
+        rospy.loginfo('created publisher for topic sector_crossed')
         self.vel = Twist()
-        self.vel.linear.x = 0.88
-        self.is_autonomous = False
+        self.sector_crossed = Bool()
+        self.sector_crossed.data = True
+        self.vel.linear.x = 0.5
         self.bridge = CvBridge()
         self.rate = rospy.Rate(10)
         self.image = None
@@ -61,11 +63,12 @@ class Stern4most_vision_AI2:
             finally:
                 self.imageLock.release()
             image_cv = cv2.resize(image_cv, dsize=(800,550), interpolation=cv2.INTER_CUBIC)
-            self.vel.angular.z = utils.getLaneCurve(image_cv,0) * -1.2
-            if self.is_autonomous:
-                logging.info('advertising to topic controller with linear x value of ' + str(self.vel.linear.x) + ' and angular z value of ' + str(self.vel.angular.z))
-                self.controller_pub.publish(self.vel)
-                self.rate.sleep()
+            self.vel.angular.z = utils.getLaneCurve(image_cv,0) * -1
+            if utils.checkPoint(image_cv):
+                rospy.loginfo('Sector crossed!')
+                self.sector_crossed_pub.publish(self.sector_crossed)
+            rospy.loginfo('advertising to topic autonomous_controller with linear x value of ' + str(self.vel.linear.x) + ' and angular z value of ' + str(self.vel.angular.z))
+            self.controller_pub.publish(self.vel)
 
             # key = cv2.waitKey(5)
             # if key == 27: # Esc key top stop
@@ -78,21 +81,10 @@ class Stern4most_vision_AI2:
             self.image = data
         finally:
             self.imageLock.release()
-    
-    def callback_manual_autonomous(self, msg):
-        logging.info('received message on topic manual_autonomous with value ' + str(msg.data))
-        print('received message on topic manual_autonomous with value ' + str(msg.data))
-        self.is_autonomous = msg.data
-        if self.is_autonomous:
-            logging.info('ready to start advertising to topic controller')
-        else:
-            logging.info('stopped advertising to topic controller')
-
 
 if __name__=='__main__':
-    logging.basicConfig(level=logging.INFO)
     rospy.init_node('stern4most_vision_AI2')
-    logging.info('node stern4most_vision_AI2 has been initialized')
+    rospy.loginfo('node stern4most_vision_AI2 has been initialized')
 
     display = Stern4most_vision_AI2()
 

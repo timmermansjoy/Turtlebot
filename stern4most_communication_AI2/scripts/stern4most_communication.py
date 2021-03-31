@@ -4,13 +4,14 @@ from std_msgs.msg import String
 from std_msgs.msg import Bool
 
 def callback_game_on(msg):
-    rospy.loginfo('received message from referee: ', msg)
+    rospy.loginfo('received message from referee: ' + str(msg.data))
     if msg.data == 'Start':
         rospy.loginfo('publishing to topic manual_autonomous')
         start_message.data = True
         manual_autonomous_pub.publish(start_message)
     
 def callback_sector_crossed(msg):
+    pass
     
 
 if __name__ == '__main__':
@@ -20,8 +21,7 @@ if __name__ == '__main__':
     rospy.loginfo('created publisher for topic manual_autonomous')
     game_on_subscriber = rospy.Subscriber('game_on', String, callback_game_on)
     rospy.loginfo('subscribed to topic game_on')
-    sector_crossed_sub = rospy.Subscriber('sector_crossed', Bool, callback_sector_crossed)
+    #sector_crossed_sub = rospy.Subscriber('sector_crossed', Bool, callback_sector_crossed)
     rospy.loginfo('subscribed to topic sector_info')
     start_message = Bool()
-
     rospy.spin()
