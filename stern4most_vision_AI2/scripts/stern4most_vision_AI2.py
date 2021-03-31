@@ -81,7 +81,8 @@ class Stern4most_vision_AI2:
     
     def callback_manual_autonomous(self, msg):
         logging.info('received message on topic manual_autonomous with value ' + str(msg.data))
-        self.is_autonomous = not msg.data
+        print('received message on topic manual_autonomous with value ' + str(msg.data))
+        self.is_autonomous = msg.data
         if self.is_autonomous:
             logging.info('ready to start advertising to topic controller')
         else:
