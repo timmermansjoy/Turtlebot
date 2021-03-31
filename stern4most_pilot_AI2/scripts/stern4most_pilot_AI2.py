@@ -4,7 +4,7 @@ import rospy
 from geometry_msgs.msg import Twist
 import logging
 import sys
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, String
 
 is_autonomous = [False]
 
@@ -30,6 +30,8 @@ def publish_to_pilot(message):
 def callback_manual_autonomous(msg):
     rospy.loginfo('changing is_autonomous from ' + str(is_autonomous[0]) + ' to ' + str(msg.data))
     is_autonomous[0] = msg.data
+    if not is_autonomous[0]:
+        publish_to_pilot(stop_vel)
     rospy.loginfo('new val is_autonomous: ' + str(is_autonomous[0]))
 
 if __name__ == '__main__':
@@ -43,8 +45,7 @@ if __name__ == '__main__':
     rospy.loginfo('subscribed to topic autonomous_controller')
     manual_autonomous_sub = rospy.Subscriber('manual_autonomous', Bool, callback_manual_autonomous)
     rospy.loginfo('subscribed to topic manual_autonomous')
-    rospy.loginfo('is_autonomous was set to: ' + str(is_autonomous[0]))
     rate = rospy.Rate(10)
-    vel = Twist()
+    stop_vel = Twist()
 
     rospy.spin()

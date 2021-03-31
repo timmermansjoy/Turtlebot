@@ -30,6 +30,7 @@ class Stern4most_vision_AI2:
         self.sector_crossed_pub = rospy.Publisher('sector_crossed', Bool, queue_size=10)
         rospy.loginfo('created publisher for topic sector_crossed')
         self.vel = Twist()
+        self.gotYellow = False
         self.sector_crossed = Bool()
         self.sector_crossed.data = True
         self.vel.linear.x = 0.5
@@ -64,8 +65,11 @@ class Stern4most_vision_AI2:
                 self.imageLock.release()
             image_cv = cv2.resize(image_cv, dsize=(800,550), interpolation=cv2.INTER_CUBIC)
             self.vel.angular.z = utils.getLaneCurve(image_cv,0) * -1
-            if utils.checkPoint(image_cv):
-                rospy.loginfo('Sector crossed!')
+            if utils.checkPoint(image_cv) and not self.gotYellow:
+                self.gotYellow = True
+            elif not utils.checkPoint(image_cv) and self.gotYellow:
+                self.gotYellow = False
+                rospy.loginfo('SECTOR CROSSED')
                 self.sector_crossed_pub.publish(self.sector_crossed)
             rospy.loginfo('advertising to topic autonomous_controller with linear x value of ' + str(self.vel.linear.x) + ' and angular z value of ' + str(self.vel.angular.z))
             self.controller_pub.publish(self.vel)

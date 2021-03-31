@@ -8,7 +8,7 @@ from PyQt5.QtCore import QTimer
 import rospy
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool,String
 
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
@@ -21,7 +21,7 @@ import sys
 import os
 
 
-GUI_UPDATE_PERIOD = 100 # ms
+GUI_UPDATE_PERIOD = 500 # ms
 
 class stern4most_dashboard_AI2(QWidget):
 
@@ -35,6 +35,7 @@ class stern4most_dashboard_AI2(QWidget):
         rospy.loginfo('created publisher for topic manual_controller')
         self.manual_autonomous_pub = rospy.Publisher('manual_autonomous', Bool, queue_size=10)
         rospy.loginfo('created publisher for topic manual_autonomous')
+        self.ranking_sub = rospy.Subscriber('dashboard_ranking', String, self.callback_ranking)
         self.rate = rospy.Rate(10)
         self.vel = Twist()
         self.is_autonomous = Bool()
@@ -60,7 +61,7 @@ class stern4most_dashboard_AI2(QWidget):
     def init_gui(self):
         # Add a place to show the image
         page_layout = QtWidgets.QVBoxLayout()
-        image_layout = QtWidgets.QVBoxLayout()
+        image_layout = QtWidgets.QHBoxLayout()
         button_layout = QtWidgets.QGridLayout()
 
         page_layout.addLayout(image_layout)
@@ -68,6 +69,10 @@ class stern4most_dashboard_AI2(QWidget):
 
         self.image_frame = QtWidgets.QLabel()
         image_layout.addWidget(self.image_frame)
+
+        self.ranking_list = QtWidgets.QLabel()
+        image_layout.addWidget(self.ranking_list)
+
 
         self.forward_button = QPushButton("Forward")
         self.forward_button.clicked.connect(self.forward_button_clicked)
@@ -189,6 +194,10 @@ class stern4most_dashboard_AI2(QWidget):
         self.is_autonomous.data = True
         rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
         self.manual_autonomous_pub.publish(self.is_autonomous)
+    
+    def callback_ranking(self, msg):
+        self.ranking_list.setText(msg.data)
+        self.ranking_list.resize(self.ranking_list.sizeHint())
 
 
 if __name__ == "__main__":
