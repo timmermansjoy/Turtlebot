@@ -1,17 +1,18 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
-import rospy 
+import rospy
 import sys
 import os
 import operator
 import optparse
-from referee.srv import * 
+from referee.srv import *
 from threading import Thread
 from threading import Lock
 from std_msgs.msg import String
 from player_time import PlayerTime
 from enum import Enum
 from functools import cmp_to_key
+
 
 def comp(first, second):
     first = first[1]
@@ -33,10 +34,12 @@ def comp(first, second):
         else:
             return 1
 
+
 class Status(Enum):
     IN_PROGRESS = 1
     WRONG_SECTOR = 2
     FINISHED = 3
+
 
 class Referee():
     def __init__(self, total_rounds, total_sectors):
@@ -46,9 +49,9 @@ class Referee():
         self.player_times = dict()
         self.lock = Lock()
 
-        rospy.init_node('referee_server') 
-    
-    def run(self): 
+        rospy.init_node('referee_server')
+
+    def run(self):
         # separate thread for the rankings publisher
         try:
             thread = Thread(target=self.publish_rank, args=())
@@ -57,9 +60,9 @@ class Referee():
             rospy.logerr("Error: unable to start thread")
 
         topic_name = "game_on"
-        
+
         subscriber = rospy.Subscriber(topic_name, String, self.start_callback)
-        s = rospy.Service('status_update', SectorUpdate, self.handle_status_update) 
+        s = rospy.Service('status_update', SectorUpdate, self.handle_status_update)
 
         rospy.loginfo("Status Update Server Ready")
 
@@ -91,20 +94,20 @@ class Referee():
                     player_time.current_round += 1
                     player_time.current_sector = 0
                     rospy.loginfo("%s entered round %d" % (name, player_time.current_round))
-                
+
                 current_round = player_time.current_round
 
             # add new player (no sector info sent yet)
-            else: 
+            else:
                 if sector != 1:
                     rospy.loginfo("%s WRONG SECTOR" % (name))
                     sector = 0
                     status = Status.WRONG_SECTOR
                     total_time = 0
                 else:
-                    now = rospy.get_rostime().to_sec() 
+                    now = rospy.get_rostime().to_sec()
                     total_time = now - self.start_time
-                
+
                 current_round = 1
                 self.player_times[name] = PlayerTime(current_round, sector, total_time, total_time)
 
@@ -113,23 +116,23 @@ class Referee():
         else:
             return status.name
 
-    def handle_status_update(self, req): 
+    def handle_status_update(self, req):
         rospy.loginfo("Received: %s from %s" % (req.sector, req.name))
 
         status = self.update_player_times(req.name, int(req.sector))
 
         player_time = self.player_times[req.name]
 
-        rospy.loginfo("Returning (%f, %f, %s)" % (player_time.total_time, player_time.last_sector_time, status)) 
-        return SectorUpdateResponse(player_time.total_time, player_time.last_sector_time, status)  
+        rospy.loginfo("Returning (%f, %f, %s)" % (player_time.total_time, player_time.last_sector_time, status))
+        return SectorUpdateResponse(player_time.total_time, player_time.last_sector_time, status)
 
     # rank publisher
     def publish_rank(self):
         publisher_name = "ranking_" + str(os.getpid())
-        topic_name     = "ranking"
+        topic_name = "ranking"
 
-        try:       
-            publisher = rospy.Publisher(topic_name, String, queue_size=1) 
+        try:
+            publisher = rospy.Publisher(topic_name, String, queue_size=1)
 
             rate = rospy.Rate(0.1)
             while not rospy.is_shutdown():
@@ -141,22 +144,23 @@ class Referee():
                     # send the list of sorted tuples (playerName, (total_time, last_sector_time, current_round))
                     rospy.loginfo("Rank Publisher Sending: " + str(rankings))
                     publisher.publish(str(rankings))
-                    rospy.loginfo("Sent") 
+                    rospy.loginfo("Sent")
 
                 rate.sleep()
 
         except rospy.ROSInterruptException:
             rospy.logerr("An interrupt occurred.")
 
-def parse_arguments():  
+
+def parse_arguments():
     parser = optparse.OptionParser()
 
     parser.add_option('-r', '--rounds',
-        action="store", dest="rounds",
-        help="number of rounds", default="2")
+                      action="store", dest="rounds",
+                      help="number of rounds", default="2")
     parser.add_option('-s', '--sectors',
-        action="store", dest="sectors",
-        help="number of sectors", default="5")
+                      action="store", dest="sectors",
+                      help="number of sectors", default="5")
 
     options, args = parser.parse_args()
 
@@ -169,7 +173,8 @@ def parse_arguments():
 
     return total_rounds, total_sectors
 
-if __name__ == "__main__": 
+
+if __name__ == "__main__":
     total_rounds, total_sectors = parse_arguments()
 
     referee = Referee(total_rounds, total_sectors)

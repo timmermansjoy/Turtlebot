@@ -8,7 +8,7 @@ from PyQt5.QtCore import QTimer
 import rospy
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Bool,String
+from std_msgs.msg import Bool, String
 
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
@@ -21,17 +21,18 @@ import sys
 import os
 
 
-GUI_UPDATE_PERIOD = 500 # ms
+GUI_UPDATE_PERIOD = 500  # ms
+
 
 class stern4most_dashboard_AI2(QWidget):
 
     def __init__(self):
         super(stern4most_dashboard_AI2, self).__init__()
-        
+
         self.bridge = CvBridge()
         self.init_subscriber()
 
-        self.controller_pub = rospy.Publisher('manual_controller', Twist, queue_size = 10)
+        self.controller_pub = rospy.Publisher('manual_controller', Twist, queue_size=10)
         rospy.loginfo('created publisher for topic manual_controller')
         self.manual_autonomous_pub = rospy.Publisher('manual_autonomous', Bool, queue_size=10)
         rospy.loginfo('created publisher for topic manual_autonomous')
@@ -42,7 +43,6 @@ class stern4most_dashboard_AI2(QWidget):
 
         # Setup the GUI and start its threading
         self.init_gui()
-
 
     def init_subscriber(self):
         self.ros_image_lock = Lock()
@@ -56,7 +56,6 @@ class stern4most_dashboard_AI2(QWidget):
         # Start to listen...
         self.subscriber = rospy.Subscriber("/camera/rgb/image_raw", Image, self.callback_image_raw)
         rospy.loginfo('subscribed to topic /camera/rgb/image_raw')
-
 
     def init_gui(self):
         # Add a place to show the image
@@ -72,7 +71,6 @@ class stern4most_dashboard_AI2(QWidget):
 
         self.ranking_list = QtWidgets.QLabel()
         image_layout.addWidget(self.ranking_list)
-
 
         self.forward_button = QPushButton("Forward")
         self.forward_button.clicked.connect(self.forward_button_clicked)
@@ -106,7 +104,6 @@ class stern4most_dashboard_AI2(QWidget):
         self.gui_timer.start(GUI_UPDATE_PERIOD)
         self.gui_timer.timeout.connect(self.update_image_on_gui)
 
-
     def callback_image_raw(self, image):
         self.ros_image_lock.acquire()
         try:
@@ -114,7 +111,6 @@ class stern4most_dashboard_AI2(QWidget):
             self.received_new_data = True
         finally:
             self.ros_image_lock.release()
-
 
     def update_image_on_gui(self):
         # Get a new image if there's one and make a copy of it.
@@ -131,10 +127,9 @@ class stern4most_dashboard_AI2(QWidget):
         if not new_image:
             return
 
-
         scale = 0.4
         interpolation = cv2.INTER_AREA
-        width  = int(opencv_image.shape[1] * scale)
+        width = int(opencv_image.shape[1] * scale)
         height = int(opencv_image.shape[0] * scale)
         dimensions = (width, height)
 
@@ -146,8 +141,6 @@ class stern4most_dashboard_AI2(QWidget):
         bytes_per_line = channels * width
         qt_image = QtGui.QImage(rgb_image.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
         self.image_frame.setPixmap(QtGui.QPixmap.fromImage(qt_image))
-
-
 
     def convert_ros_to_opencv(self, ros_image):
         try:
@@ -189,12 +182,12 @@ class stern4most_dashboard_AI2(QWidget):
         rospy.loginfo('advertising to topic controller with linear x value ' + str(self.vel.linear.x) + ' and angular z value of ' + str(self.vel.angular.z))
         self.controller_pub.publish(self.vel)
         self.rate.sleep()
-        
+
     def autonomous_button_clicked(self):
         self.is_autonomous.data = True
         rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
         self.manual_autonomous_pub.publish(self.is_autonomous)
-    
+
     def callback_ranking(self, msg):
         self.ranking_list.setText(msg.data)
         self.ranking_list.resize(self.ranking_list.sizeHint())
@@ -203,7 +196,6 @@ class stern4most_dashboard_AI2(QWidget):
 if __name__ == "__main__":
     rospy.init_node("stern4most_dashboard_AI2")
     rospy.loginfo('Node stern4most_dashboard_AI2 has been initialized')
-
 
     application = QApplication(sys.argv)
     gui = stern4most_dashboard_AI2()
