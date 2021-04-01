@@ -8,16 +8,16 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         print("missing argument")
         exit(0)
-    
-    # number of 
+
+    # number of
     target_connections = int(sys.argv[1]) + 1
     print(str(target_connections))
 
     publisherName = "referee_" + str(os.getpid())
-    topicName     = "game_on"
+    topicName = "game_on"
 
     try:
-        rospy.init_node(publisherName, anonymous=False)        
+        rospy.init_node(publisherName, anonymous=False)
         publisher = rospy.Publisher(topicName, String, queue_size=1)
 
         rate = rospy.Rate(1)
@@ -38,8 +38,7 @@ if __name__ == '__main__':
                 rospy.loginfo('published')
                 break
             rospy.sleep(5)
-            #rate.sleep()
+            # rate.sleep()
 
-            
     except rospy.ROSInterruptException:
         print("An interrupt occurred.")

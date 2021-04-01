@@ -4,11 +4,13 @@ from std_msgs.msg import String
 from std_msgs.msg import Bool
 from referee.srv import *
 
-player_name="AI2"
+player_name = "AI2"
 sector = [0]
+
 
 def callback_ranking(msg):
     ranking_pub.publish(msg)
+
 
 def callback_game_on(msg):
     rospy.loginfo('received message from referee: ' + str(msg.data))
@@ -16,7 +18,8 @@ def callback_game_on(msg):
         rospy.loginfo('publishing to topic manual_autonomous')
         start_message.data = True
         manual_autonomous_pub.publish(start_message)
-    
+
+
 def callback_sector_crossed(msg):
     sector[0] = sector[0] % 16 + 1 if sector[0] != 0 else 1
     sector_update = rospy.ServiceProxy('status_update', SectorUpdate)
@@ -24,6 +27,7 @@ def callback_sector_crossed(msg):
     if response.status == 'WRONG_SECTOR' or response.status == 'FINISHED':
         start_message.data = False
         manual_autonomous_pub.publish(start_message)
+
 
 if __name__ == '__main__':
     rospy.init_node('stern4most_communication_AI2')

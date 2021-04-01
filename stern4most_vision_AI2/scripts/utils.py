@@ -6,24 +6,26 @@ import numpy as np
 curvelist = []
 avgVal = 2
 
+
 def checkPoint(img):
-    #transform image (get bottom of image)
+    # transform image (get bottom of image)
     wT, hT, c = img.shape
     pointOfIntrest = [214, 405, 0, 400]
     points = valTrackbars(pointOfIntrest)
     imgCheckpoint = warpImg(img, points, wT, hT)
 
-    #detect color
+    # detect color
     hsv = cv2.cvtColor(imgCheckpoint, cv2.COLOR_BGR2HSV)
     upper_val = np.array([41, 255, 255])
     lower_val = np.array([21, 100, 100])
     mask = cv2.inRange(hsv, lower_val, upper_val)
 
-    #return if it has yellow in image
+    # return if it has yellow in image
     hasYellow = np.sum(mask)
     if hasYellow > 0:
         return True
     return False
+
 
 def thresholding(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -43,6 +45,7 @@ def warpImg(img, points, w, h, inv=False):
 
     imgWarp = cv2.warpPerspective(img, matrix, (w, h))
     return imgWarp
+
 
 def valTrackbars(points, wT=770, hT=434):
     widthTop = points[0]
@@ -110,10 +113,12 @@ def stackImages(scale, imgArray):
         ver = hor
     return ver
 
+
 def drawPoints(img, points):
     for x in range(0, 4):
         cv2.circle(img, (int(points[x][0]), int(points[x][1])), 15, (0, 0, 255), cv2.FILLED)
     return img
+
 
 def getLaneCurve(img, display=2):
 
