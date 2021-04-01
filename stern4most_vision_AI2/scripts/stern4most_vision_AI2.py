@@ -19,10 +19,10 @@ GUI_UPDATE_PERIOD = 0.10  # Seconds
 
 
 class Stern4most_vision_AI2:
-    
+
     def __init__(self):
         self.running = True
-        self.video_sub   = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
+        self.video_sub = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
         rospy.loginfo('subscribed to topic /camera/rgb/image_raw')
         self.topic_name = 'autonomous_controller'
         self.controller_pub = rospy.Publisher(self.topic_name, Twist, queue_size=10)
@@ -63,8 +63,8 @@ class Stern4most_vision_AI2:
                 image_cv = self.convert_ros_to_opencv(self.image)
             finally:
                 self.imageLock.release()
-            image_cv = cv2.resize(image_cv, dsize=(800,550), interpolation=cv2.INTER_CUBIC)
-            self.vel.angular.z = utils.getLaneCurve(image_cv,0) * -1
+            image_cv = cv2.resize(image_cv, dsize=(800, 550), interpolation=cv2.INTER_CUBIC)
+            self.vel.angular.z = utils.getLaneCurve(image_cv, 0) * -1
             if utils.checkPoint(image_cv) and not self.gotYellow:
                 self.gotYellow = True
             elif not utils.checkPoint(image_cv) and self.gotYellow:
@@ -86,7 +86,8 @@ class Stern4most_vision_AI2:
         finally:
             self.imageLock.release()
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     rospy.init_node('stern4most_vision_AI2')
     rospy.loginfo('node stern4most_vision_AI2 has been initialized')
 

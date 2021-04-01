@@ -8,12 +8,14 @@ from std_msgs.msg import Bool, String
 
 is_autonomous = [False]
 
+
 def callback_autonomous_controller(message):
     if is_autonomous[0]:
         rospy.loginfo('publishing to pilot from autonomous_controller')
         publish_to_pilot(message)
     else:
         pass
+
 
 def callback_manual_controller(message):
     if not is_autonomous[0]:
@@ -22,10 +24,12 @@ def callback_manual_controller(message):
     else:
         pass
 
+
 def publish_to_pilot(message):
     rospy.loginfo('advertising to topic /cmd_vel with linear x value of ' + str(message.linear.x) + ' and angular z value of ' + str(message.angular.z))
     pub.publish(message)
     rate.sleep
+
 
 def callback_manual_autonomous(msg):
     rospy.loginfo('changing is_autonomous from ' + str(is_autonomous[0]) + ' to ' + str(msg.data))
@@ -33,6 +37,7 @@ def callback_manual_autonomous(msg):
     if not is_autonomous[0]:
         publish_to_pilot(stop_vel)
     rospy.loginfo('new val is_autonomous: ' + str(is_autonomous[0]))
+
 
 if __name__ == '__main__':
     rospy.init_node('stern4most_pilot_AI2')
