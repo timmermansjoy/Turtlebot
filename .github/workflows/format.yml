@@ -1,0 +1,45 @@
+name: format code
+
+# Controls when the action will run.
+on: [push]
+
+jobs:
+  linter:
+    name: Indentation Linter
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pylint
+          # pip install -r requirements.txt
+      - name: Lint with pylint
+        run: |
+          python -m pylint --disable=all -e W0311 --jobs=0 --indent-string='    ' **/*.py
+
+  autopep8:
+    name: autopep8 formatter
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: autopep8
+        uses: peter-evans/autopep8@v1
+        with:
+          args: --recursive --in-place --max-line-length=180 .
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: autopep8 action fixes
+          title: Fixes by autopep8 action
+          body: This is an auto-generated PR with fixes by autopep8.
+          labels: autopep8, automated pr
+          reviewers: timmermansjoy
+          branch: autopep8-patches
