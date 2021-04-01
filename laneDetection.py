@@ -16,10 +16,10 @@ GUI_UPDATE_PERIOD = 0.10  # Seconds
 
 
 class SternformostVision:
-    
+
     def __init__(self):
         self.running = True
-        self.subVideo   = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
+        self.subVideo = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
 
         self.bridge = CvBridge()
 
@@ -27,7 +27,7 @@ class SternformostVision:
         self.imageLock = Lock()
 
         self.threshold1 = 127
-        self.threshold2  = 255
+        self.threshold2 = 255
 
         self.statusMessage = ''
 
@@ -44,25 +44,25 @@ class SternformostVision:
             return cv_image
         except CvBridgeError as error:
             raise Exception("Failed to convert to OpenCV image")
-    
-    def canny_edge_detector(self,frame):
+
+    def canny_edge_detector(self, frame):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        blur = cv2.GaussianBlur(gray, (5,5),0)
+        blur = cv2.GaussianBlur(gray, (5, 5), 0)
         canny = cv2.Canny(blur, 50, 150)
         return canny
-    
-    def region_of_interest_mask(self,image):
+
+    def region_of_interest_mask(self, image):
         height = image.shape[0]
         width = image.shape[1]
 
         polygons = np.array([
             [(0, height - 100),
-            (0, height - 200),
-            (width / 2, height / 2),
-            (width, height - 200),
-            (width, height - 100)]
+             (0, height - 200),
+             (width / 2, height / 2),
+             (width, height - 200),
+             (width, height - 100)]
         ], dtype=np.int32)
-        mask = np.zeros_like(image) 
+        mask = np.zeros_like(image)
         cv2.fillPoly(mask, polygons, 255)
         masked_image = cv2.bitwise_and(image, mask)
         return masked_image
@@ -72,7 +72,7 @@ class SternformostVision:
         if lines is not None:
             for line in lines:
                 x1, y1, x2, y2 = line.reshape(4)
-                cv2.line(line_image, (x1, y1), (x2, y2), (0,255,0),10)
+                cv2.line(line_image, (x1, y1), (x2, y2), (0, 255, 0), 10)
         return line_image
 
     def make_coordinates(self, image, line_parameters):
@@ -81,7 +81,7 @@ class SternformostVision:
             y1 = image.shape[0] - 100
             y2 = int(y1 * (2/3))
             x1 = int((y1 - intercept)/slope)
-            x2 =int((y2 - intercept)/slope)
+            x2 = int((y2 - intercept)/slope)
             return np.array([x1, y1, x2, y2])
         else:
             return None
@@ -99,8 +99,8 @@ class SternformostVision:
                     left_fit.append((slope, intercept))
                 else:
                     right_fit.append((slope, intercept))
-        left_fit_average = np.average(left_fit, axis = 0)
-        right_fit_average = np.average(right_fit, axis = 0)
+        left_fit_average = np.average(left_fit, axis=0)
+        right_fit_average = np.average(right_fit, axis=0)
         left_line = self.make_coordinates(image, left_fit_average)
         right_line = self.make_coordinates(image, right_fit_average)
         if left_line is not None and right_line is not None:
@@ -118,11 +118,11 @@ class SternformostVision:
                 self.imageLock.release()
 
             cv2.namedWindow("Image", cv2.WINDOW_NORMAL)
-            img = cv2.resize(image_cv,(360,480))
+            img = cv2.resize(image_cv, (360, 480))
             cv2.imshow("Image", img)
 
             canny_edges = self.canny_edge_detector(img)
-            canny_edges = cv2.resize(canny_edges,(360,480))
+            canny_edges = cv2.resize(canny_edges, (360, 480))
             cropped = self.region_of_interest_mask(canny_edges)
             lines = cv2.HoughLinesP(cropped, 2, np.pi/180, 100, np.array([]), minLineLength=80, maxLineGap=25)
             if lines is not None:
@@ -137,7 +137,7 @@ class SternformostVision:
             cv2.imshow('line_image', image_with_lines)
             key = cv2.waitKey(5)
 
-            if key == 27: # Esc key top stop
+            if key == 27:  # Esc key top stop
                 cv2.destroyAllWindows()
                 self.running = False
 
@@ -149,7 +149,7 @@ class SternformostVision:
             self.imageLock.release()
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     rospy.init_node('sternformost_example_vision')
 
     display = SternformostVision()
