@@ -5,7 +5,7 @@ import sys
 import os
 import operator
 import optparse
-from referee.srv import *
+#from referee.srv import *
 from threading import Thread
 from threading import Lock
 from std_msgs.msg import String
