@@ -29,6 +29,7 @@ class Stern4most_vision_AI2:
         rospy.loginfo('created publisher for topic autonomous_controller')
         self.sector_crossed_pub = rospy.Publisher('sector_crossed', Bool, queue_size=10)
         rospy.loginfo('created publisher for topic sector_crossed')
+        self.lidar_controller_sub = rospy.Subscriber('lidar_controller', Twist, self.callback_lidar_controller)
         self.vel = Twist()
         self.gotYellow = False
         self.sector_crossed = Bool()
@@ -38,6 +39,7 @@ class Stern4most_vision_AI2:
         self.rate = rospy.Rate(10)
         self.image = None
         self.imageLock = Lock()
+        self.lidar_message = Twist()
 
         self.statusMessage = ''
 
@@ -64,7 +66,7 @@ class Stern4most_vision_AI2:
             finally:
                 self.imageLock.release()
             image_cv = cv2.resize(image_cv, dsize=(800, 550), interpolation=cv2.INTER_CUBIC)
-            self.vel.angular.z = utils.getLaneCurve(image_cv, 0) * -1
+            self.vel.angular.z = (utils.getLaneCurve(image_cv, 0) * -1) * 0.8 + self.lidar_message.linear.z * 0.2
             if utils.checkPoint(image_cv) and not self.gotYellow:
                 self.gotYellow = True
             elif not utils.checkPoint(image_cv) and self.gotYellow:
@@ -85,6 +87,9 @@ class Stern4most_vision_AI2:
             self.image = data
         finally:
             self.imageLock.release()
+
+    def callback_lidar_controller(self, msg):
+        self.lidar_message = msg
 
 
 if __name__ == '__main__':

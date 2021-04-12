@@ -38,6 +38,8 @@ def callback_manual_autonomous(msg):
         publish_to_pilot(stop_vel)
     rospy.loginfo('new val is_autonomous: ' + str(is_autonomous[0]))
 
+# def callback_lidar_controller(msg):
+
 
 if __name__ == '__main__':
     rospy.init_node('stern4most_pilot_AI2')
@@ -50,6 +52,7 @@ if __name__ == '__main__':
     rospy.loginfo('subscribed to topic autonomous_controller')
     manual_autonomous_sub = rospy.Subscriber('manual_autonomous', Bool, callback_manual_autonomous)
     rospy.loginfo('subscribed to topic manual_autonomous')
+    #lidar_controller_sub = rospy.Subscriber('lidar_controller', Twist, callback_lidar_controller)
     rate = rospy.Rate(10)
     stop_vel = Twist()
 
