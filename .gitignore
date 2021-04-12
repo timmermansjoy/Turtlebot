@@ -151,3 +151,4 @@ own_package
 sternformost
 vision_test
 CMakeLists.txt
+lidar_test
