@@ -46,17 +46,6 @@ class LaserListener():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
-        argument = str(sys.argv[1])
-    else:
-        print(usage())
-        sys.exit(1)
-
     rospy.init_node("laser_listener")
-
-    if argument == "overview":
-        LaserListener()
-    else:
-        LaserListener("data")
-
+    LaserListener("data")
     rospy.spin()
