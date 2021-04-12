@@ -5,7 +5,9 @@
   <arg name="x_pos" default="0.7"/>
   <arg name="y_pos" default="7"/>
   <arg name="z_pos" default="0.0"/>
-
+  <arg name="s" default="16"/>
+  <arg name="r" default="1"/>
+  
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(find sternformost)/worlds/sternformost.world"/>
     <arg name="paused" value="false"/>
@@ -21,7 +23,7 @@
   <node pkg="stern4most_pilot_AI2" type="stern4most_pilot_AI2.py" name="stern4most_pilot_AI2.py"/>
   <node pkg="stern4most_dashboard_AI2" type="stern4most_dashboard_AI2.py" name="stern4most_dashboard_AI2"/>
   <node pkg="stern4most_vision_AI2" type="stern4most_vision_AI2.py" name="stern4most_vision_AI2"/>
-  <node pkg="referee" type="referee_service.py" name="referee_service"/>
+  <node pkg="referee" type="referee_service.py" name="referee_service" args="-s $(arg s) -r $(arg r)"/>
   <node pkg="stern4most_communication_AI2" type="stern4most_communication.py" name="stern4most_communication"/>
-  <node pkg="referee" type="start_publisher.py" name="start_publisher"/>
+  <node pkg="referee" type="start_publisher.py" name="start_publisher" args="1"/>
 </launch>	
