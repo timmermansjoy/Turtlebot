@@ -17,6 +17,8 @@ class LaserListener():
         self.subscriber = rospy.Subscriber("/scan", LaserScan, self.callback_scan)
 
     def callback_scan(self, data):
+        leftDistance = []
+        rightDistance = []
         index = 0
         object_found = False
         for value in data.ranges:
@@ -26,20 +28,14 @@ class LaserListener():
                 # look at every degree around the robot
                 current_angle = data.angle_min + (data.angle_increment * index)
                 current_angle = math.degrees(current_angle)
-                angleList.append(current_angle)
-                if len(angleList) > avgVal:
-                    angleList.pop(0)
-                leftValues = [x for x in angleList if x < 45]
-                rightValues = [x for x in angleList if x > 315]
 
-                leftTurnCurve = len(leftValues) / 166
-                rightTurnCurve = len(rightValues) / 166
-                # print("left", leftValues)
-                # print("right", rightValues)
-                angle = sum(angleList)//len(angleList)
+                if current_angle < 45:
+                    leftDistance.append(value)
+                elif current_angle > 315:
+                    rightDistance.append(value)
             index += 1
-        print(len(leftValues), len(rightValues))
-        print(leftTurnCurve, rightTurnCurve)
+
+        print(len(leftDistance), len(rightDistance))
 
         if object_found == False:
             print("No object(s) found in range.")
