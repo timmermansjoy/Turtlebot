@@ -144,3 +144,10 @@ cython_debug/
 .DS_Store
 .vscode/
 .idea/
+first_package
+first_service
+nikki_bruls_first_package
+own_package
+sternformost
+vision_test
+CMakeLists.txt
