@@ -88,7 +88,7 @@ class Stern4most_vision_AI2:
         finally:
             self.imageLock.release()
 
-    #def callback_lidar_controller(self, msg):
+    # def callback_lidar_controller(self, msg):
         #self.lidar_message = msg
 
 
