@@ -7,45 +7,57 @@ import sys
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 
-
-angleList = []
-avgVal = 360
+ANGLE = 360
 
 
 class LaserListener():
     def __init__(self, output="overview"):
         self.output = output
         self.subscriber = rospy.Subscriber("/scan", LaserScan, self.callback_scan)
-        self.lidarpub = rospy.Publisher("lidar_controller", Twist, queue_size=10)
+        self.lidar_pub = rospy.Publisher("lidar_controller", Twist, queue_size=10)
         self.vel = Twist()
+        self.vel.linear.x = 0.22
         self.rate = rospy.Rate(10)
 
-    def publish(self, pVel):
-        self.vel.linear.z = pVel
-        self.lidarpub.publish(self.vel)
+    def publish(self, ang_vel):
+        self.vel.angular.z = ang_vel
+        print('publishing value: ' + str(self.vel.angular.z))
+        self.lidar_pub.publish(self.vel)
 
     def callback_scan(self, data):
-        leftDistance = []
-        rightDistance = []
+        left_weighted_values = []
+        right_weighted_values = []
         index = 0
+        weighted_angle = 0
         object_found = False
-        for value in data.ranges:
-            if 0.5 < value < 2.5:
+        for distance in data.ranges:
+            if distance < 0.5:
                 if object_found == False:
                     object_found = True
                 # look at every degree around the robot
                 current_angle = data.angle_min + (data.angle_increment * index)
                 current_angle = math.degrees(current_angle)
 
-                if 5 < current_angle < 45:
-                    leftDistance.append(value)
-                elif 355 > current_angle > 315:
-                    rightDistance.append(value)
+                if current_angle < 45:
+                    weighted_angle = current_angle
+                    left_weighted_values.append(weighted_angle / distance)
+                elif current_angle > 315:
+                    weighted_angle = ANGLE - current_angle
+                    right_weighted_values.append(weighted_angle / distance)
             index += 1
-        avgL = sum(leftDistance)/len(leftDistance) if len(leftDistance) != 0 else 0
-        avgR = sum(rightDistance)/len(rightDistance) if len(rightDistance) != 0 else 0
-
-        self.publish(avgR-avgL)
+        avgL = sum(left_weighted_values)/len(left_weighted_values) if len(left_weighted_values) != 0 else 0
+        avgR = sum(right_weighted_values)/len(right_weighted_values) if len(right_weighted_values) != 0 else 0
+        print('left average: ' + str(avgL) + '  right average: ' + str(avgR))
+        if avgL > avgR:
+            if avgL > 0.05:
+                self.publish(-0.5)
+            else:
+                self.publish(0)
+        else:
+            if avgR > 0.05:
+                self.publish(0.5)
+            else:
+                self.publish(0)
 
         if object_found == False:
             print("No object(s) found in range.")
