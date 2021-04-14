@@ -25,5 +25,4 @@
   <node pkg="stern4most_vision_AI2" type="stern4most_vision_AI2.py" name="stern4most_vision_AI2"/>
   <node pkg="referee" type="referee_service.py" name="referee_service" args="-s $(arg s) -r $(arg r)"/>
   <node pkg="stern4most_communication_AI2" type="stern4most_communication.py" name="stern4most_communication"/>
-  <node pkg="referee" type="start_publisher.py" name="start_publisher" args="1"/>
 </launch>	
