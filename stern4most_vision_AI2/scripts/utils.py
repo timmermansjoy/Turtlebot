@@ -7,6 +7,25 @@ curvelist = []
 avgVal = 2
 
 
+def detected_tree_branch(img):
+    wT, hT, c = img.shape
+    pointOfInterest = [220,405,35,400]
+    points = valTrackbars(pointOfInterest)
+    imgTreeBranch = warpImg(img, points, wT, hT)
+
+    lab = cv2.cvtColor(imgTreeBranch, cv2.COLOR_BGR2LAB)
+    upper_val = np.array([110, 180, 135])
+    lower_val = np.array([10, 115, 120])
+
+    mask = cv2.inRange(lab, lower_val, upper_val)
+
+    tree_branch_detected = np.sum(mask)
+
+    if tree_branch_detected > 100:
+        return True
+    return False
+
+
 def checkPoint(img):
     # transform image (get bottom of image)
     wT, hT, c = img.shape
