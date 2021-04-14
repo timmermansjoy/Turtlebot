@@ -12,7 +12,7 @@ then
 
     # start rommel
     tmux rename-window -t 0 'gazebo'
-    tmux send-keys -t 'rommel' 'rommel' C-m
+    tmux send-keys -t 'gazebo' 'rommel' C-m
 
     tmux new-window -t $SESSION:1 -n 'ControlCenter'
     tmux send-keys -t 'pilot' 'rosrun stern4most_pilot_AI2 stern4most_pilot_AI2.py' C-m
@@ -40,6 +40,8 @@ then
     # Setup an additional shell
     tmux new-window -t $SESSION:3 -n 'communication'
     tmux send-keys -t 'communication' "rosrun stern4most_communication_AI2 stern4most_communication_AI2.py" C-m
+
+    tmux join-pane -v -s 3 -t 2
 
 fi
 
