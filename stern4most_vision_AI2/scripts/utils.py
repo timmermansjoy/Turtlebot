@@ -4,13 +4,17 @@ import cv2
 import numpy as np
 
 curvelist = []
-avgVal = 2
+avgVal = 10
 
 
 def checkPoint(img):
+    """
+    if we ride over a checkpoint
+    returns: boolean
+    """
+
     # transform image (get bottom of image)
     wT, hT, c = img.shape
-    # pointOfIntrest = [214, 405, 0, 400]
     pointOfIntrest = [220, 405, 35, 400]
     points = valTrackbars(pointOfIntrest)
     imgCheckpoint = warpImg(img, points, wT, hT)
@@ -29,14 +33,25 @@ def checkPoint(img):
 
 
 def thresholding(img):
+    """
+    Creates a binary image based on hsv values
+    returns: converted image
+    """
+
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    lowerWhite = np.array([0, 0, 100])
-    upperWhite = np.array([179, 60, 170])
-    maskedWhite = cv2.inRange(hsv, lowerWhite, upperWhite)
-    return maskedWhite
+    upper_val = np.array([0, 0, 100])
+    lower_val = np.array([179, 60, 170])
+    # fill image with mask
+    mask = cv2.inRange(hsv, upper_val, lower_val)
+    return mask
 
 
 def warpImg(img, points, w, h, inv=False):
+    """
+    Warp the image so it has more of a top down perspective
+    returns: converted image
+    """
+
     pts1 = np.float32([points])
     pts2 = np.float32([[0, 0], [w, 0], [0, h], [w, h]])
     if inv:
@@ -49,6 +64,10 @@ def warpImg(img, points, w, h, inv=False):
 
 
 def valTrackbars(points, wT=770, hT=434):
+    """
+    puts the points of intrest into an array with 4 values to crop the image
+    returns: array
+    """
     widthTop = points[0]
     heightTop = points[1]
     widthBottom = points[2]
@@ -59,7 +78,13 @@ def valTrackbars(points, wT=770, hT=434):
 
 
 def getHistogram(img, minPer=0.1, display=False, region=1):
+    """
+    calculates the avarage spread of values within an image on the X-axis
+    so that we can later get the curvature of this image
+    returns: int
+    """
 
+    # split the image in a region
     if region == 1:
         histValues = np.sum(img, axis=0)
     else:
@@ -77,11 +102,14 @@ def getHistogram(img, minPer=0.1, display=False, region=1):
             cv2.line(imgHist, (x, img.shape[0]), (x, img.shape[0]-int(intensity/255/region)), (255, 0, 255), 1)
             cv2.circle(imgHist, (basePoint, img.shape[0]), 20, (0, 255, 255), cv2.FILLED)
         return basePoint, imgHist
-
     return basePoint
 
 
-def stackImages(scale, imgArray):
+def __stackImages(scale, imgArray):
+    """
+    puts array of images in a single window
+    returns: array of images
+    """
     rows = len(imgArray)
     cols = len(imgArray[0])
     rowsAvailable = isinstance(imgArray[0], list)
@@ -115,14 +143,19 @@ def stackImages(scale, imgArray):
     return ver
 
 
-def drawPoints(img, points):
+def __drawPoints(img, points):
+    """put points of the intrests on the image to see where they are"""
     for x in range(0, 4):
         cv2.circle(img, (int(points[x][0]), int(points[x][1])), 15, (0, 0, 255), cv2.FILLED)
     return img
 
 
 def getLaneCurve(img, display=0):
-
+    """
+    calculate the curvature road inside an image
+    returns: int between -1 and 1
+    optional: show all the used images to get the curvature
+    """
     imgResult = img.copy()
 
     # step 1 get binary image
@@ -133,7 +166,7 @@ def getLaneCurve(img, display=0):
     pointOfIntrest = [270, 340, 0, 550]
     points = valTrackbars(pointOfIntrest)
     imgWarp = warpImg(imgThres, points, wT, hT)
-    imgWarpPoints = drawPoints(img, points)
+    imgWarpPoints = __drawPoints(img, points)
 
     # step 3 get curvature of line in image
     midPoint, imgHist = getHistogram(imgWarp, display=True, minPer=0.5, region=4)
@@ -162,20 +195,19 @@ def getLaneCurve(img, display=0):
         for x in range(-30, 30):
             w = wT // 20
             cv2.line(imgResult, (w * x + int(curve//50), midY-10), (w * x + int(curve//50), midY+10), (0, 0, 255), 2)
-
     if display == 2:
-        imgStacked = stackImages(0.7, ([img, imgWarp, imgWarpPoints],
-                                       [imgHist, imgLaneColor, imgResult]))
+        imgStacked = __stackImages(0.7, ([img, imgWarp, imgWarpPoints],
+                                         [imgHist, imgLaneColor, imgResult]))
         cv2.imshow('ImageStack', imgStacked)
 
     elif display == 1:
-        cv2.imshow('Resutlt', imgResult)
+        cv2.imshow('Result', imgResult)
 
      # NORMALIZATION
     curve = curve/100
     if curve > 1:
-        curve == 1
+        curve = 1
     if curve < -1:
-        curve == -1
+        curve = -1
     # return the curve value
     return curve
