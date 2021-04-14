@@ -11,20 +11,29 @@ ANGLE = 360
 
 
 class LaserListener():
-    def __init__(self, output="overview"):
-        self.output = output
+    def __init__(self):
+        # To get the data from the laser, the lidar node has to subscribe to the /scan topic which will return a LaserScan object. 
+        # The incoming messages will be handled by the callback_scan method.
         self.subscriber = rospy.Subscriber("/scan", LaserScan, self.callback_scan)
+        rospy.loginfo("Subscribed to topic /scan")
+
+        # To send the info, calculated in this class, back to the pilot node, the lidar node has to have a publisher for the lidar_controller.
+        # It will publish a Twist message, with the queue_size set to 10.
         self.lidar_pub = rospy.Publisher("lidar_controller", Twist, queue_size=10)
+        rospy.loginfo("Created publisher for topic lidar_controller")
+
+        # The publisher for the lidar_controller topic will publish Twist messages with a static linear.x value of 0.27. 
+        # The rate is set to 10.
         self.vel = Twist()
         self.vel.linear.x = 0.27
         self.rate = rospy.Rate(10)
 
-    def publish(self, ang_vel):
-        self.vel.angular.z = ang_vel
-        print('publishing value: ' + str(self.vel.angular.z))
-        self.lidar_pub.publish(self.vel)
-
     def callback_scan(self, data):
+        """
+        This method determines whether or not an object has been detected, and if so, which side the turtlebot should turn to.
+        """
+
+        # The weighted values are stored in arrays.
         left_weighted_values = []
         right_weighted_values = []
         index = 0
@@ -61,9 +70,18 @@ class LaserListener():
 
         if object_found == False:
             print("No object(s) found in range.")
+    
+    def publish(self, ang_vel):
+        """
+        
+        """
+
+        self.vel.angular.z = ang_vel
+        rospy.loginfo('publishing value: ' + str(self.vel.angular.z))
+        self.lidar_pub.publish(self.vel)
 
 
 if __name__ == "__main__":
     rospy.init_node("laser_listener")
-    LaserListener("data")
+    LaserListener()
     rospy.spin()
