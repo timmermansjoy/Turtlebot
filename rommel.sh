@@ -15,7 +15,7 @@ then
     tmux send-keys -t 'gazebo' 'rommel' C-m
 
     tmux new-window -t $SESSION:1 -n 'ControlCenter'
-    tmux send-keys -t 'pilot' 'rosrun stern4most_pilot_AI2 stern4most_pilot_AI2.py' C-m
+    tmux send-keys -t 'ControlCenter' 'rosrun stern4most_pilot_AI2 stern4most_pilot_AI2.py' C-m
 
 
     tmux new-window -t $SESSION:2 -n 'dashboard'
