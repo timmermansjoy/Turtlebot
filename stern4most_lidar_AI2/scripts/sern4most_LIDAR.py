@@ -31,7 +31,7 @@ class LaserListener():
         weighted_angle = 0
         object_found = False
         for distance in data.ranges:
-            if distance < 0.7:
+            if distance < 0.65:
                 if object_found == False:
                     object_found = True
                 # look at every degree around the robot
