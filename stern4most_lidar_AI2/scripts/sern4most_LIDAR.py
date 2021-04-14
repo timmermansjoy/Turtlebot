@@ -16,7 +16,7 @@ class LaserListener():
         self.subscriber = rospy.Subscriber("/scan", LaserScan, self.callback_scan)
         self.lidar_pub = rospy.Publisher("lidar_controller", Twist, queue_size=10)
         self.vel = Twist()
-        self.vel.linear.x = 0.22
+        self.vel.linear.x = 0.27
         self.rate = rospy.Rate(10)
 
     def publish(self, ang_vel):
