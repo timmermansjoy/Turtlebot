@@ -21,7 +21,7 @@ import sys
 import os
 
 
-GUI_UPDATE_PERIOD = 500  # ms
+GUI_UPDATE_PERIOD = 16  # ms
 
 
 class stern4most_dashboard_AI2(QWidget):
