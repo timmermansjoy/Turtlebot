@@ -66,7 +66,7 @@ class Stern4most_vision_AI2:
             finally:
                 self.imageLock.release()
             image_cv = cv2.resize(image_cv, dsize=(800, 550), interpolation=cv2.INTER_CUBIC)
-            self.vel.angular.z = utils.getLaneCurve(image_cv, 0) * -1
+            self.vel.angular.z = utils.getLaneCurve(image_cv, 1) * -1
             if utils.checkPoint(image_cv) and not self.gotYellow:
                 self.gotYellow = True
             elif not utils.checkPoint(image_cv) and self.gotYellow:
@@ -88,7 +88,7 @@ class Stern4most_vision_AI2:
         finally:
             self.imageLock.release()
 
-    #def callback_lidar_controller(self, msg):
+    # def callback_lidar_controller(self, msg):
         #self.lidar_message = msg
 
 

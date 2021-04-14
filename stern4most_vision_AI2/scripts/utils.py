@@ -120,7 +120,7 @@ def drawPoints(img, points):
     return img
 
 
-def getLaneCurve(img, display=2):
+def getLaneCurve(img, display=0):
 
     imgResult = img.copy()
 

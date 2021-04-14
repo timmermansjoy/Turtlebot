@@ -31,17 +31,17 @@ class LaserListener():
         weighted_angle = 0
         object_found = False
         for distance in data.ranges:
-            if distance < 0.5:
+            if distance < 0.7:
                 if object_found == False:
                     object_found = True
                 # look at every degree around the robot
                 current_angle = data.angle_min + (data.angle_increment * index)
                 current_angle = math.degrees(current_angle)
 
-                if current_angle < 45:
+                if current_angle < 40:
                     weighted_angle = current_angle
                     left_weighted_values.append(weighted_angle / distance)
-                elif current_angle > 315:
+                elif current_angle > 310:
                     weighted_angle = ANGLE - current_angle
                     right_weighted_values.append(weighted_angle / distance)
             index += 1
@@ -50,12 +50,12 @@ class LaserListener():
         print('left average: ' + str(avgL) + '  right average: ' + str(avgR))
         if avgL > avgR:
             if avgL > 0.05:
-                self.publish(-0.5)
+                self.publish(-0.4)
             else:
                 self.publish(0)
         else:
             if avgR > 0.05:
-                self.publish(0.5)
+                self.publish(0.4)
             else:
                 self.publish(0)
 
