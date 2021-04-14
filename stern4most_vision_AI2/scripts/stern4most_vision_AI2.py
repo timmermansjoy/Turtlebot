@@ -34,9 +34,9 @@ class Stern4most_vision_AI2:
         self.gotYellow = False
         self.sector_crossed = Bool()
         self.sector_crossed.data = True
-        self.vel.linear.x = 0.22
+        self.vel.linear.x = 0.30
         self.bridge = CvBridge()
-        self.rate = rospy.Rate(10)
+        self.rate = rospy.Rate(5)
         self.image = None
         self.imageLock = Lock()
         self.lidar_message = Twist()

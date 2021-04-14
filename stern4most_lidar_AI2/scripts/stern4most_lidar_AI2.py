@@ -16,7 +16,7 @@ class LaserListener():
         self.subscriber = rospy.Subscriber("/scan", LaserScan, self.callback_scan)
         self.lidar_pub = rospy.Publisher("lidar_controller", Twist, queue_size=10)
         self.vel = Twist()
-        self.vel.linear.x = 0.22
+        self.vel.linear.x = 0.27
         self.rate = rospy.Rate(10)
 
     def publish(self, ang_vel):
@@ -31,7 +31,7 @@ class LaserListener():
         weighted_angle = 0
         object_found = False
         for distance in data.ranges:
-            if distance < 0.7:
+            if distance < 0.65:
                 if object_found == False:
                     object_found = True
                 # look at every degree around the robot
