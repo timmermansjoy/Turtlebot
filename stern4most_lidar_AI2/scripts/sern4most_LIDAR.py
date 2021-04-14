@@ -50,12 +50,12 @@ class LaserListener():
         print('left average: ' + str(avgL) + '  right average: ' + str(avgR))
         if avgL > avgR:
             if avgL > 0.05:
-                self.publish(-0.4)
+                self.publish(-0.35)
             else:
                 self.publish(0)
         else:
             if avgR > 0.05:
-                self.publish(0.4)
+                self.publish(0.35)
             else:
                 self.publish(0)
 

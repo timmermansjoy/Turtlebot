@@ -10,7 +10,8 @@ avgVal = 2
 def checkPoint(img):
     # transform image (get bottom of image)
     wT, hT, c = img.shape
-    pointOfIntrest = [214, 405, 0, 400]
+    # pointOfIntrest = [214, 405, 0, 400]
+    pointOfIntrest = [220, 405, 35, 400]
     points = valTrackbars(pointOfIntrest)
     imgCheckpoint = warpImg(img, points, wT, hT)
 
