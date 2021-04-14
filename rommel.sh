@@ -46,4 +46,4 @@ then
 fi
 
 # Attach Session, on the Main window
-tmux attach-session -t $SESSION:0
+tmux attach-session -t $SESSION:1
