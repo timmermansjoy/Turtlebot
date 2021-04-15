@@ -7,12 +7,16 @@ import sys
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 
+# The speed is set to a static value of 0.27. The maximum distance that will be considered 'close' is set to 1.
+# Angles with a value between 0 and 40 will be considered as angles to our left.
+# Angles with a value between 310 and 360 will be considered angles to our right.
+
 SPEED = 0.27
-MAX_DISTANCE = 0.65
-MIN_ANGLE_LEFT = 0
+MAX_DISTANCE = 1.2
+MIN_ANGLE_LEFT = 3
 MAX_ANGLE_LEFT = 40
-MIN_ANGLE_RIGHT = 310
-MAX_ANGLE_RIGHT = 360
+MIN_ANGLE_RIGHT = 320
+MAX_ANGLE_RIGHT = 357
 
 
 class LaserListener():
@@ -44,7 +48,11 @@ class LaserListener():
         index = 0
         weighted_angle = 0
         object_found = False
+
+        # The for loop will iterate through all distances found in the data
         for distance in data.ranges:
+
+            # If a distance is less than the MAX_DISTANCE, it is close enough to be considered
             if distance < MAX_DISTANCE:
                 if object_found == False:
                     object_found = True
@@ -52,24 +60,44 @@ class LaserListener():
                 current_angle = data.angle_min + (data.angle_increment * index)
                 current_angle = math.degrees(current_angle)
 
+                # If the corresponding angle is between MIN_ANGLE_LEFT and MAX_ANGLE_LEFT, it is considered to be an object to our left.
                 if MIN_ANGLE_LEFT < current_angle < MAX_ANGLE_LEFT:
+
+                    # To make sure that objects right in front of us get a higher weight than objects that are the side,
+                    # it is necessary to subtract the current_angle from the MAX_ANGLE_LEFT. This will give an angle of 1 a bigger weight than an angle of 20.
                     weighted_angle = MAX_ANGLE_LEFT - current_angle
+
+                    # To make sure that objects that are closer to us get a higher weight than objects that are futher away,
+                    # it is necessary to divide the value in weighted_angle by the distance, 
+                    # since the result of, for example,  1 / 0.5 is bigger than the result of 1 / 1.
                     left_weighted_values.append(weighted_angle / distance)
+
+                # If the corresponding angle is between MIN_ANGLE_RIGHT and MAX_ANGLE_RIGHT, it is considered to be an object to our right.
                 elif MIN_ANGLE_RIGHT < current_angle < MAX_ANGLE_RIGHT:
+
+                    # To make sure that objects right in front of us get a higher weight than objects that are the side,
+                    # it is necessary to subtract the MIN_ANGLE_RIGHT from the current_angle. This will give an angle of 360 a bigger weight than an angle of 345.
                     weighted_angle = current_angle - MIN_ANGLE_RIGHT
+
+                    # To make sure that objects that are closer to us get a higher weight than objects that are futher away,
+                    # it is necessary to divide the value in weighted_angle by the distance, 
+                    # since the result of, for example,  1 / 0.5 is bigger than the result of 1 / 1.
                     right_weighted_values.append(weighted_angle / distance)
             index += 1
-        avgL = sum(left_weighted_values)/len(left_weighted_values) if len(left_weighted_values) != 0 else 0
-        avgR = sum(right_weighted_values)/len(right_weighted_values) if len(right_weighted_values) != 0 else 0
+
+    
+        avgL = sum(left_weighted_values)/3500 if len(left_weighted_values) > 0 else 0
+        avgR = sum(right_weighted_values)/3500 if len(right_weighted_values) > 0 else 0
         print('left average: ' + str(avgL) + '  right average: ' + str(avgR))
+       
         if avgL > avgR:
             if avgL > 0.05:
-                self.publish(-0.35)
+                self.publish(avgL * -1.2)
             else:
                 self.publish(0)
         else:
             if avgR > 0.05:
-                self.publish(0.35)
+                self.publish(avgR * 1.2)
             else:
                 self.publish(0)
 

@@ -23,9 +23,11 @@ class Pilot():
         self.stop_vel = Twist()
         self.is_autonomous = False
         self.object_detected = False
+        #self.lidar_message = Twist()
 
     def callback_autonomous_controller(self, msg):
         if self.is_autonomous and not self.object_detected:
+            #msg.angular.z = msg.angular.z + self.lidar_message.angular.z * 0.7
             rospy.loginfo('publishing to pilot from autonomous_controller')
             self.publish_to_pilot(msg)
         else:
@@ -51,6 +53,7 @@ class Pilot():
         rospy.loginfo('new val is_autonomous: ' + str(self.is_autonomous))
 
     def callback_lidar_controller(self, msg):
+        # self.lidar_message = msg
         if self.is_autonomous:
             if not msg.angular.z == 0:
                 self.object_detected = True
