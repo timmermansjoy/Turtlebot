@@ -85,7 +85,7 @@ class LaserListener():
                     right_weighted_values.append(weighted_angle / distance)
             index += 1
 
-        if self.object_found == True:
+        if object_found == True:
 
             # To determine whether the turtlebot should turn left or right to avoid the found object, we calculate the average of the left_weighted_values and right_weighted_values arrays.
             # This is done by taking the sum of the arrays and dividing this by 3000.
