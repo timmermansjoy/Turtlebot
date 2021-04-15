@@ -52,11 +52,11 @@ class LaserListener():
                 current_angle = data.angle_min + (data.angle_increment * index)
                 current_angle = math.degrees(current_angle)
 
-                if MIN_LEFT_ANGLE < current_angle < MAX_LEFT_ANGLE:
-                    weighted_angle = MAX_LEFT_ANGLE - current_angle
+                if MIN_ANGLE_LEFT < current_angle < MAX_ANGLE_LEFT:
+                    weighted_angle = MAX_ANGLE_LEFT - current_angle
                     left_weighted_values.append(weighted_angle / distance)
-                elif MIN_LEFT_ANGLE < current_angle < MAX_RIGHT_ANGLE:
-                    weighted_angle = MAX_RIGHT_ANGLE - current_angle
+                elif MIN_ANGLE_RIGHT < current_angle < MAX_ANGLE_RIGHT:
+                    weighted_angle = MAX_ANGLE_RIGHT - current_angle
                     right_weighted_values.append(weighted_angle / distance)
             index += 1
         avgL = sum(left_weighted_values)/len(left_weighted_values) if len(left_weighted_values) != 0 else 0
