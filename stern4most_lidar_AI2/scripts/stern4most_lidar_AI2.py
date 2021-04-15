@@ -17,7 +17,7 @@ MAX_ANGLE_RIGHT = 360
 
 class LaserListener():
     def __init__(self):
-        # To get the data from the laser, the lidar node has to subscribe to the /scan topic which will return a LaserScan object. 
+        # To get the data from the laser, the lidar node has to subscribe to the /scan topic which will return a LaserScan object.
         # The incoming messages will be handled by the callback_scan method.
         self.subscriber = rospy.Subscriber("/scan", LaserScan, self.callback_scan)
         rospy.loginfo("Subscribed to topic /scan")
@@ -27,7 +27,7 @@ class LaserListener():
         self.lidar_pub = rospy.Publisher("lidar_controller", Twist, queue_size=10)
         rospy.loginfo("Created publisher for topic lidar_controller")
 
-        # The publisher for the lidar_controller topic will publish Twist messages with a static linear.x value of 0.27. 
+        # The publisher for the lidar_controller topic will publish Twist messages with a static linear.x value of 0.27.
         # The rate is set to 10.
         self.vel = Twist()
         self.vel.linear.x = SPEED
@@ -75,10 +75,10 @@ class LaserListener():
 
         if object_found == False:
             print("No object(s) found in range.")
-    
+
     def publish(self, ang_vel):
         """
-        
+
         """
 
         self.vel.angular.z = ang_vel
