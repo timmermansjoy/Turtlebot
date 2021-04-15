@@ -13,10 +13,10 @@ from geometry_msgs.msg import Twist
 
 SPEED = 0.27
 MAX_DISTANCE = 1
-MIN_ANGLE_LEFT = 0
+MIN_ANGLE_LEFT = 3
 MAX_ANGLE_LEFT = 45
 MIN_ANGLE_RIGHT = 315
-MAX_ANGLE_RIGHT = 360
+MAX_ANGLE_RIGHT = 357
 
 
 class LaserListener():
@@ -86,8 +86,8 @@ class LaserListener():
             index += 1
 
     
-        avgL = sum(left_weighted_values)/2000 if len(left_weighted_values) > 0 else 0
-        avgR = sum(right_weighted_values)/2000 if len(right_weighted_values) > 0 else 0
+        avgL = sum(left_weighted_values)/3000 if len(left_weighted_values) > 0 else 0
+        avgR = sum(right_weighted_values)/3000 if len(right_weighted_values) > 0 else 0
         print('left average: ' + str(avgL) + '  right average: ' + str(avgR))
 
         if avgL > avgR:
