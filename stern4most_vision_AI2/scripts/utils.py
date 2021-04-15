@@ -9,7 +9,7 @@ avgVal = 10
 
 def detected_tree_branch(img):
     wT, hT, c = img.shape
-    pointOfInterest = [220,405,35,400]
+    pointOfInterest = [220, 405, 35, 400]
     points = valTrackbars(pointOfInterest)
     imgTreeBranch = warpImg(img, points, wT, hT)
 
@@ -182,6 +182,7 @@ def getLaneCurve(img, display=0):
 
     # step 2 warp image to points of intrest
     hT, wT, c = img.shape
+    # topWidth, topHeight, bottomWidth, bottomHeight
     pointOfIntrest = [270, 340, 0, 550]
     points = valTrackbars(pointOfIntrest)
     imgWarp = warpImg(imgThres, points, wT, hT)
@@ -228,5 +229,5 @@ def getLaneCurve(img, display=0):
         curve = 1
     if curve < -1:
         curve = -1
-    # return the curve value
-    return curve
+    # return the curve value reversed so the robot drives
+    return curve * -1
