@@ -66,7 +66,7 @@ class Stern4most_vision_AI2:
             finally:
                 self.imageLock.release()
             image_cv = cv2.resize(image_cv, dsize=(800, 550), interpolation=cv2.INTER_CUBIC)
-            self.vel.angular.z = utils.getLaneCurve(image_cv, 1) * -1
+            self.vel.angular.z = utils.getLaneCurve(image_cv, 2)
             if utils.checkPoint(image_cv) and not self.gotYellow:
                 self.gotYellow = True
             elif not utils.checkPoint(image_cv) and self.gotYellow:
@@ -76,10 +76,11 @@ class Stern4most_vision_AI2:
             rospy.loginfo('advertising to topic autonomous_controller with linear x value of ' + str(self.vel.linear.x) + ' and angular z value of ' + str(self.vel.angular.z))
             self.controller_pub.publish(self.vel)
 
-            # key = cv2.waitKey(5)
-            # if key == 27: # Esc key top stop
-            #     cv2.destroyAllWindows()
-            #     self.running = False
+            # to make sure the cv2 showimage is shown in utils getLaneCurve
+            key = cv2.waitKey(5)
+            if key == 27:  # Esc key top stop
+                cv2.destroyAllWindows()
+                self.running = False
 
     def callback_image_raw(self, data):
         self.imageLock.acquire()
