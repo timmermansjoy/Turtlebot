@@ -68,7 +68,7 @@ class LaserListener():
                     weighted_angle = MAX_ANGLE_LEFT - current_angle
 
                     # To make sure that objects that are closer to us get a higher weight than objects that are futher away,
-                    # it is necessary to divide the value in weighted_angle by the distance, 
+                    # it is necessary to divide the value in weighted_angle by the distance,
                     # since the result of, for example,  1 / 0.5 is bigger than the result of 1 / 1.
                     left_weighted_values.append(weighted_angle / distance)
 
@@ -80,7 +80,7 @@ class LaserListener():
                     weighted_angle = current_angle - MIN_ANGLE_RIGHT
 
                     # To make sure that objects that are closer to us get a higher weight than objects that are futher away,
-                    # it is necessary to divide the value in weighted_angle by the distance, 
+                    # it is necessary to divide the value in weighted_angle by the distance,
                     # since the result of, for example,  1 / 0.5 is bigger than the result of 1 / 1.
                     right_weighted_values.append(weighted_angle / distance)
             index += 1
@@ -89,7 +89,7 @@ class LaserListener():
         avgL = sum(left_weighted_values)/2000 if len(left_weighted_values) > 0 else 0
         avgR = sum(right_weighted_values)/2000 if len(right_weighted_values) > 0 else 0
         print('left average: ' + str(avgL) + '  right average: ' + str(avgR))
-       
+
         if avgL > avgR:
             if avgL > 0.05:
                 self.publish(avgL * -1)
