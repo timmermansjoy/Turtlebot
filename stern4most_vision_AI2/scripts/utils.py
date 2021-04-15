@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 curvelist = []
-avgVal = 10
+avgVal = 2
 
 
 def detected_tree_branch(img):
@@ -34,7 +34,7 @@ def checkPoint(img):
 
     # transform image (get bottom of image)
     wT, hT, c = img.shape
-    pointOfIntrest = [220, 405, 35, 400]
+    pointOfIntrest = [214, 405, 0, 400]
     points = valTrackbars(pointOfIntrest)
     imgCheckpoint = warpImg(img, points, wT, hT)
 
