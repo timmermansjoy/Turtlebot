@@ -100,7 +100,7 @@ class LaserListener():
 
                 # Values below 0.05 are not published, giving the vision more chance to correct our position on the track. If the value is smaller than 0.05, the node will publish a value of 0.
                 # If the value is greater than 0.05, it should be multiplied by -1, since turning right is indicated by a negative angular.z value.
-                if avgL > 0.08:
+                if avgL > 0.05:
                     self.publish(avgL * -1)
                 else:
                     self.publish(0)
@@ -109,7 +109,7 @@ class LaserListener():
             else:
 
                 # The value that is published should not be multiplied by -1 in this case, since turning left is indicated by a positive angular.z value.
-                if avgR > 0.08:
+                if avgR > 0.05:
                     self.publish(avgR)
                 else:
                     self.publish(0)
