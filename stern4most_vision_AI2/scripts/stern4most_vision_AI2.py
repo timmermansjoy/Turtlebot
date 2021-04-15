@@ -24,19 +24,20 @@ class Stern4most_vision_AI2:
         self.running = True
         self.video_sub = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
         rospy.loginfo('subscribed to topic /camera/rgb/image_raw')
-        self.topic_name = 'autonomous_controller'
-        self.controller_pub = rospy.Publisher(self.topic_name, Twist, queue_size=10)
+
+        self.controller_pub = rospy.Publisher('autonomous_controller', Twist, queue_size=10)
         rospy.loginfo('created publisher for topic autonomous_controller')
+
         self.sector_crossed_pub = rospy.Publisher('sector_crossed', Bool, queue_size=10)
         rospy.loginfo('created publisher for topic sector_crossed')
-        #self.lidar_controller_sub = rospy.Subscriber('lidar_controller', Twist, self.callback_lidar_controller)
+
         self.vel = Twist()
         self.gotYellow = False
         self.sector_crossed = Bool()
         self.sector_crossed.data = True
         self.vel.linear.x = 0.25
         self.bridge = CvBridge()
-        self.rate = rospy.Rate(5)
+        self.rate = rospy.Rate(10)
         self.image = None
         self.imageLock = Lock()
         self.lidar_message = Twist()

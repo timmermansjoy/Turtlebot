@@ -12,11 +12,11 @@ from geometry_msgs.msg import Twist
 # Angles with a value between 310 and 360 will be considered angles to our right.
 
 SPEED = 0.27
-MAX_DISTANCE = 1.2
-MIN_ANGLE_LEFT = 3
-MAX_ANGLE_LEFT = 40
-MIN_ANGLE_RIGHT = 320
-MAX_ANGLE_RIGHT = 357
+MAX_DISTANCE = 1
+MIN_ANGLE_LEFT = 0
+MAX_ANGLE_LEFT = 45
+MIN_ANGLE_RIGHT = 315
+MAX_ANGLE_RIGHT = 360
 
 
 class LaserListener():
@@ -86,18 +86,18 @@ class LaserListener():
             index += 1
 
     
-        avgL = sum(left_weighted_values)/3500 if len(left_weighted_values) > 0 else 0
-        avgR = sum(right_weighted_values)/3500 if len(right_weighted_values) > 0 else 0
+        avgL = sum(left_weighted_values)/2000 if len(left_weighted_values) > 0 else 0
+        avgR = sum(right_weighted_values)/2000 if len(right_weighted_values) > 0 else 0
         print('left average: ' + str(avgL) + '  right average: ' + str(avgR))
        
         if avgL > avgR:
             if avgL > 0.05:
-                self.publish(avgL * -1.2)
+                self.publish(avgL * -1)
             else:
                 self.publish(0)
         else:
             if avgR > 0.05:
-                self.publish(avgR * 1.2)
+                self.publish(avgR)
             else:
                 self.publish(0)
 

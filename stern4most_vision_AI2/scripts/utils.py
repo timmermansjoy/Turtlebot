@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 curvelist = []
-avgVal = 8
+avgVal = 10
 
 
 def detected_tree_branch(img):
