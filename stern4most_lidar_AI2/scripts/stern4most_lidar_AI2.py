@@ -85,30 +85,43 @@ class LaserListener():
                     right_weighted_values.append(weighted_angle / distance)
             index += 1
 
-    
-        avgL = sum(left_weighted_values)/3000 if len(left_weighted_values) > 0 else 0
-        avgR = sum(right_weighted_values)/3000 if len(right_weighted_values) > 0 else 0
-        print('left average: ' + str(avgL) + '  right average: ' + str(avgR))
+        if self.object_found == True:
 
-        if avgL > avgR:
-            if avgL > 0.05:
-                self.publish(avgL * -1)
+            # To determine whether the turtlebot should turn left or right to avoid the found object, we calculate the average of the left_weighted_values and right_weighted_values arrays.
+            # This is done by taking the sum of the arrays and dividing this by 3000.
+            # We chose to go with 3000 because the array can contain 40 values at most, but this is hardly ever the case, so to make up for that we will divide it by 30. 
+            # To then get a number that is usable as the angular.z value for the Twist message, it should be divided by 100, thus making 3000.
+            avgL = sum(left_weighted_values)/3000 if len(left_weighted_values) > 0 else 0
+            avgR = sum(right_weighted_values)/3000 if len(right_weighted_values) > 0 else 0
+            rospy.loginfo('left average: ' + str(avgL) + '  right average: ' + str(avgR))
+        
+            # If the avgL has a greater value than the avgR, we should turn right.
+            if avgL > avgR:
+
+                # Values below 0.05 are not published, giving the vision more chance to correct our position on the track. If the value is smaller than 0.05, the node will publish a value of 0.
+                # If the value is greater than 0.05, it should be multiplied by -1, since turning right is indicated by a negative angular.z value.
+                if avgL > 0.08:
+                    self.publish(avgL * -1)
+                else:
+                    self.publish(0)
+
+            # If the avgR has a greater value than the avgL, we should turn left.
             else:
-                self.publish(0)
+
+                # The value that is published should not be multiplied by -1 in this case, since turning left is indicated by a positive angular.z value.
+                if avgR > 0.08:
+                    self.publish(avgR)
+                else:
+                    self.publish(0)
+
         else:
-            if avgR > 0.05:
-                self.publish(avgR)
-            else:
-                self.publish(0)
-
-        if object_found == False:
             print("No object(s) found in range.")
+    
 
     def publish(self, ang_vel):
         """
-
+        This method takes an int, sets it as the angular.z value of the Twist message that was declared at the top of this file, and publishes it to the lidar_controller topic.
         """
-
         self.vel.angular.z = ang_vel
         rospy.loginfo('publishing value: ' + str(self.vel.angular.z))
         self.lidar_pub.publish(self.vel)
