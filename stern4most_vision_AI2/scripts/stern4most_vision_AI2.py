@@ -34,7 +34,7 @@ class Stern4most_vision_AI2:
         self.gotYellow = False
         self.sector_crossed = Bool()
         self.sector_crossed.data = True
-        self.vel.linear.x = 0.30
+        self.vel.linear.x = 0.25
         self.bridge = CvBridge()
         self.rate = rospy.Rate(5)
         self.image = None
