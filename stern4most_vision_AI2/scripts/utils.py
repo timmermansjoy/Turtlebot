@@ -21,8 +21,10 @@ def detected_tree_branch(img):
 
     tree_branch_detected = np.sum(mask)
 
-    if tree_branch_detected > 100:
+    if tree_branch_detected > 2000000:
+        print("Tree found: ", tree_branch_detected)
         return True
+    print("Tree NOT found: ", tree_branch_detected)
     return False
 
 
