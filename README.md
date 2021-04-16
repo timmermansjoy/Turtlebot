@@ -46,6 +46,9 @@ alternative:
 
 Our systems layout ![Layout](img/Architecture.png)
 
+all systems work independently of eachother. Only the vision has to be active for it to start self driving.
+Lidar makes obstacle avoidance better as expected.
+
 # Kown issues
 
 - There is a small change the car will avoid a object by going off track

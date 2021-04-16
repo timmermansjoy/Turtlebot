@@ -192,8 +192,8 @@ def getLaneCurve(img, BACKWARDS, display=0):
     imgWarpPoints = __drawPoints(img, points)
 
     # step 3 get curvature of line in image
-    midPoint, imgHist = getHistogram(imgWarp, display=True, minPer=0.5, region=4)
-    basePoint, imgHist = getHistogram(imgWarp, display=True, minPer=0.6)
+    midPoint, imgHist = getHistogram(imgWarp, display=True, minPer=0.2, region=3)
+    basePoint, imgHist = getHistogram(imgWarp, display=True, minPer=0.4)
     curveRaw = basePoint-midPoint
 
     # step 4 avarage curve rate
@@ -222,12 +222,13 @@ def getLaneCurve(img, BACKWARDS, display=0):
         imgStacked = __stackImages(0.7, ([img, imgWarp, imgWarpPoints],
                                          [imgHist, imgLaneColor, imgResult]))
         cv2.imshow('ImageStack', imgStacked)
-
     elif display == 1:
         cv2.imshow('Result', imgResult)
 
      # NORMALIZATION
+    
     curve = curve/100 if BACKWARDS else curve/100 * 5
+    
     if curve > 1:
         curve = 1
     if curve < -1:
