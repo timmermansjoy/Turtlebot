@@ -192,8 +192,11 @@ def getLaneCurve(img, BACKWARDS, display=0):
     imgWarpPoints = __drawPoints(img, points)
 
     # step 3 get curvature of line in image
-    midPoint, imgHist = getHistogram(imgWarp, display=True, minPer=0.2, region=3)
-    basePoint, imgHist = getHistogram(imgWarp, display=True, minPer=0.4)
+    minPer_mid = 0.2 if BACKWARDS else 0.5
+    minPer_base = 0.4 if BACKWARDS else 0.6
+    region = 3 if BACKWARDS else 4
+    midPoint, imgHist = getHistogram(imgWarp, display=True, minPer=minPer_mid, region=region)
+    basePoint, imgHist = getHistogram(imgWarp, display=True, minPer=minPer_base)
     curveRaw = basePoint-midPoint
 
     # step 4 avarage curve rate
