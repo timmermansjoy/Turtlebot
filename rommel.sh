@@ -12,7 +12,7 @@ then
 
     # start rommel
     tmux rename-window -t 0 'gazebo'
-    tmux send-keys -t 'gazebo' 'normal' C-m
+    tmux send-keys -t 'gazebo' 'rommel' C-m
 
     # start pilot system
     tmux new-window -t $SESSION:1 -n 'ControlCenter'
