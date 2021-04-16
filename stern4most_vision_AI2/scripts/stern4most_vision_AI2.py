@@ -16,6 +16,7 @@ import numpy as np
 import utils
 
 GUI_UPDATE_PERIOD = 0.10  # Seconds
+BACKWARDS = True
 
 
 class Stern4most_vision_AI2:
@@ -36,6 +37,8 @@ class Stern4most_vision_AI2:
         self.sector_crossed = Bool()
         self.sector_crossed.data = True
         self.vel.linear.x = 0.25
+        if BACKWARDS:
+            self.vel.linear.x = -0.05
         self.bridge = CvBridge()
         self.rate = rospy.Rate(10)
         self.image = None
@@ -68,9 +71,6 @@ class Stern4most_vision_AI2:
                 self.imageLock.release()
             image_cv = cv2.resize(image_cv, dsize=(800, 550), interpolation=cv2.INTER_CUBIC)
             self.vel.angular.z = utils.getLaneCurve(image_cv, 1)
-
-            if utils.detected_tree_branch(image_cv):
-                self.vel.angular.z += 0.3
 
             if utils.checkPoint(image_cv) and not self.gotYellow:
                 self.gotYellow = True
