@@ -16,7 +16,8 @@ import numpy as np
 import utils
 
 GUI_UPDATE_PERIOD = 0.10  # Seconds
-BACKWARDS = True
+
+BACKWARDS = False
 
 
 class Stern4most_vision_AI2:
@@ -36,9 +37,7 @@ class Stern4most_vision_AI2:
         self.gotYellow = False
         self.sector_crossed = Bool()
         self.sector_crossed.data = True
-        self.vel.linear.x = 0.25
-        if BACKWARDS:
-            self.vel.linear.x = -0.15
+        self.vel.linear.x = -0.15 if BACKWARDS else 0.25
         self.bridge = CvBridge()
         self.rate = rospy.Rate(10)
         self.image = None
@@ -70,8 +69,7 @@ class Stern4most_vision_AI2:
             finally:
                 self.imageLock.release()
             image_cv = cv2.resize(image_cv, dsize=(800, 550), interpolation=cv2.INTER_CUBIC)
-            self.vel.angular.z = utils.getLaneCurve(image_cv, 2)
-
+            self.vel.angular.z = utils.getLaneCurve(image_cv, BACKWARDS, 2)
             if utils.checkPoint(image_cv) and not self.gotYellow:
                 self.gotYellow = True
             elif not utils.checkPoint(image_cv) and self.gotYellow:
