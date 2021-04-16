@@ -9,7 +9,8 @@ avgVal = 2
 
 def detected_tree_branch(img):
     wT, hT, c = img.shape
-    pointOfInterest = [220, 405, 35, 400]
+    # pointOfInterest = [220, 405, 35, 400] ==> oude waarden
+    pointOfInterest = [215, 400, 30, 395]
     points = valTrackbars(pointOfInterest)
     imgTreeBranch = warpImg(img, points, wT, hT)
 
@@ -200,7 +201,7 @@ def getLaneCurve(img, display=0):
     if len(curvelist) > avgVal:
         curvelist.pop(0)
     curve = int(sum(curvelist)/len(curvelist))
-
+    
     # display menu
     if display != 0:
         imgInvWarp = warpImg(imgWarp, points, wT, hT, inv=True)

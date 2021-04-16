@@ -90,12 +90,16 @@ class stern4most_dashboard_AI2(QWidget):
         self.autonomous_button = QPushButton("GO TURTLE GOOO")
         self.autonomous_button.clicked.connect(self.autonomous_button_clicked)
 
+        self.sternformost_button = QPushButton("Drive sternformost")
+        self.sternformost_button.clicked.connect(self.sternformost_button_clicked)
+
         button_layout.addWidget(self.forward_button, 0, 1)
         button_layout.addWidget(self.left_button, 1, 0)
         button_layout.addWidget(self.stop_button, 1, 1)
         button_layout.addWidget(self.right_button, 1, 2)
         button_layout.addWidget(self.backward_button, 2, 1)
         button_layout.addWidget(self.autonomous_button, 3, 1)
+        button_layout.addWidget(self.sternformost_button, 3, 2)
 
         self.setLayout(page_layout)
 
@@ -187,6 +191,9 @@ class stern4most_dashboard_AI2(QWidget):
         self.is_autonomous.data = True
         rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
         self.manual_autonomous_pub.publish(self.is_autonomous)
+
+    def sternformost_button_clicked(self):
+        pass
 
     def callback_ranking(self, msg):
         self.ranking_list.setText(msg.data)
