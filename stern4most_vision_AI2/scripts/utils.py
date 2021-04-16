@@ -186,7 +186,7 @@ def getLaneCurve(img, BACKWARDS, display=0):
     # step 2 warp image to points of intrest
     hT, wT, c = img.shape
     # topWidth, topHeight, bottomWidth, bottomHeight
-    pointOfIntrest = [270, 340, 0, 550] if BACKWARDS else [120, 370, 0, 550]
+    pointOfIntrest = [120, 370, 0, 550] if BACKWARDS else [270, 340, 0, 550]
     points = valTrackbars(pointOfIntrest)
     imgWarp = warpImg(imgThres, points, wT, hT)
     imgWarpPoints = __drawPoints(img, points)
@@ -226,9 +226,9 @@ def getLaneCurve(img, BACKWARDS, display=0):
         cv2.imshow('Result', imgResult)
 
      # NORMALIZATION
-    
-    curve = curve/100 if BACKWARDS else curve/100 * 5
-    
+
+    curve = curve/100 * 4 if BACKWARDS else curve/100
+
     if curve > 1:
         curve = 1
     if curve < -1:
