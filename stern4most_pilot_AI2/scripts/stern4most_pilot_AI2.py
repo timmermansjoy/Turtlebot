@@ -18,7 +18,7 @@ class Pilot():
         self.manual_autonomous_sub = rospy.Subscriber('manual_autonomous', Bool, self.callback_manual_autonomous)
         rospy.loginfo('subscribed to topic manual_autonomous')
         self.lidar_controller_sub = rospy.Subscriber('lidar_controller', Twist, self.callback_lidar_controller)
-        rospy.loginfo('subscriberd to topic lidar_controller')
+        rospy.loginfo('subscribed to topic lidar_controller')
         self.rate = rospy.Rate(10)
         self.stop_vel = Twist()
         self.is_autonomous = False
