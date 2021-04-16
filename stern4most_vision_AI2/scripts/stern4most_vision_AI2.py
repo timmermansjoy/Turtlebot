@@ -16,6 +16,7 @@ import numpy as np
 import utils
 
 GUI_UPDATE_PERIOD = 0.10  # Seconds
+
 BACKWARDS = False
 
 
