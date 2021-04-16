@@ -228,7 +228,7 @@ def getLaneCurve(img, display=0):
 
      # NORMALIZATION
 
-    curve = (curve/100) * 3
+    curve = (curve/100) * 5
     if curve > 1:
         curve = 1
     if curve < -1:
