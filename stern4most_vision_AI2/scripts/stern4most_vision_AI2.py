@@ -38,7 +38,7 @@ class Stern4most_vision_AI2:
         self.sector_crossed.data = True
         self.vel.linear.x = 0.25
         if BACKWARDS:
-            self.vel.linear.x = -0.05
+            self.vel.linear.x = -0.15
         self.bridge = CvBridge()
         self.rate = rospy.Rate(10)
         self.image = None
@@ -70,7 +70,7 @@ class Stern4most_vision_AI2:
             finally:
                 self.imageLock.release()
             image_cv = cv2.resize(image_cv, dsize=(800, 550), interpolation=cv2.INTER_CUBIC)
-            self.vel.angular.z = utils.getLaneCurve(image_cv, 1)
+            self.vel.angular.z = utils.getLaneCurve(image_cv, 2)
 
             if utils.checkPoint(image_cv) and not self.gotYellow:
                 self.gotYellow = True
