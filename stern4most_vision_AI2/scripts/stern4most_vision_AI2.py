@@ -71,7 +71,7 @@ class Stern4most_vision_AI2:
             finally:
                 self.imageLock.release()
             image_cv = cv2.resize(image_cv, dsize=(800, 550), interpolation=cv2.INTER_CUBIC)
-            ang_val = utils.getLaneCurve(image_cv, self.sternformost.data, 2)
+            ang_val = utils.getLaneCurve(image_cv, self.sternformost.data, 1)
             if utils.checkPoint(image_cv) and not self.gotYellow:
                 self.gotYellow = True
             elif not utils.checkPoint(image_cv) and self.gotYellow:
@@ -96,7 +96,7 @@ class Stern4most_vision_AI2:
 
     def publish(self, ang_val):
         self.vel.angular.z = ang_val
-        self.vel.linear.x = 0.25
+        self.vel.linear.x = 0.27
         if self.sternformost.data:
             self.vel.linear.x = -0.15
 
