@@ -32,6 +32,8 @@ class Stern4most_vision_AI2:
         self.sector_crossed_pub = rospy.Publisher('sector_crossed', Bool, queue_size=10)
         rospy.loginfo('created publisher for topic sector_crossed')
 
+        self.sternformost_sub = rospy.Subscriber('sternformost', Bool, self.callback_sternformost)
+
         self.vel = Twist()
         self.gotYellow = False
         self.sector_crossed = Bool()
@@ -42,6 +44,7 @@ class Stern4most_vision_AI2:
         self.image = None
         self.imageLock = Lock()
         self.lidar_message = Twist()
+        self.sternformost = Bool()
 
         self.statusMessage = ''
 
@@ -68,7 +71,7 @@ class Stern4most_vision_AI2:
             finally:
                 self.imageLock.release()
             image_cv = cv2.resize(image_cv, dsize=(800, 550), interpolation=cv2.INTER_CUBIC)
-            self.vel.angular.z = utils.getLaneCurve(image_cv, BACKWARDS, 1)
+            ang_val = utils.getLaneCurve(image_cv, self.sternformost.data, 1)
             if utils.checkPoint(image_cv) and not self.gotYellow:
                 self.gotYellow = True
             elif not utils.checkPoint(image_cv) and self.gotYellow:
@@ -76,7 +79,7 @@ class Stern4most_vision_AI2:
                 rospy.loginfo('SECTOR CROSSED')
                 self.sector_crossed_pub.publish(self.sector_crossed)
             rospy.loginfo('advertising to topic autonomous_controller with linear x value of ' + str(self.vel.linear.x) + ' and angular z value of ' + str(self.vel.angular.z))
-            self.controller_pub.publish(self.vel)
+            self.publish(ang_val)
 
             # to make sure the cv2 showimage is shown in utils getLaneCurve
             key = cv2.waitKey(5)
@@ -90,6 +93,17 @@ class Stern4most_vision_AI2:
             self.image = data
         finally:
             self.imageLock.release()
+
+    def publish(self, ang_val):
+        self.vel.angular.z = ang_val
+        if self.sternformost.data:
+            self.vel.linear.x = -0.15
+        else:
+            self.vel.linear.x = 0.25
+        self.controller_pub.publish(self.vel)
+
+    def callback_sternformost(self, data):
+        self.sternformost = data
 
     # def callback_lidar_controller(self, msg):
         #self.lidar_message = msg

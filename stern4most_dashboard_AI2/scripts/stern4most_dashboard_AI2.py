@@ -37,9 +37,13 @@ class stern4most_dashboard_AI2(QWidget):
         self.manual_autonomous_pub = rospy.Publisher('manual_autonomous', Bool, queue_size=10)
         rospy.loginfo('created publisher for topic manual_autonomous')
         self.ranking_sub = rospy.Subscriber('dashboard_ranking', String, self.callback_ranking)
+        rospy.loginfo('subscribed to topic dashboard_ranking')
+        self.sternformost_pub = rospy.Publisher('sternformost', Bool, queue_size=10)
         self.rate = rospy.Rate(10)
         self.vel = Twist()
         self.is_autonomous = Bool()
+        self.sternformost = Bool()
+        self.sternformost.data = False
 
         # Setup the GUI and start its threading
         self.init_gui()
@@ -170,7 +174,11 @@ class stern4most_dashboard_AI2(QWidget):
 
     def move_waffle(self, line_vel, ang_vel):
         self.is_autonomous.data = False
+        rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
         self.manual_autonomous_pub.publish(self.is_autonomous)
+        self.sternformost.data = False
+        rospy.loginfo('advertising to topic sternformost with value ' + str(self.sternformost.data))
+        self.sternformost_pub.publish(self.sternformost)
         if self.vel.linear.x + line_vel <= 0.22:
             self.vel.linear.x += line_vel
         else:
@@ -188,16 +196,20 @@ class stern4most_dashboard_AI2(QWidget):
         self.rate.sleep()
 
     def autonomous_button_clicked(self):
-        BACKWARDS = False
+        self.sternformost.data = False
         self.is_autonomous.data = True
         rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
         self.manual_autonomous_pub.publish(self.is_autonomous)
+        rospy.loginfo('advertising to topic sternformost with value ' + str(self.sternformost.data))
+        self.sternformost_pub.publish(self.sternformost)
 
     def sternformost_button_clicked(self):
-        BACKWARDS = True
+        self.sternformost.data = True
         self.is_autonomous.data = True
         rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
         self.manual_autonomous_pub.publish(self.is_autonomous)
+        rospy.loginfo('advertising to topic sternformost with value ' + str(self.sternformost.data))
+        self.sternformost_pub.publish(self.sternformost)
 
     def callback_ranking(self, msg):
         self.ranking_list.setText(msg.data)
