@@ -22,7 +22,7 @@ import os
 
 
 GUI_UPDATE_PERIOD = 16  # ms
-
+BACKWARDS = True
 
 class stern4most_dashboard_AI2(QWidget):
 
@@ -188,12 +188,16 @@ class stern4most_dashboard_AI2(QWidget):
         self.rate.sleep()
 
     def autonomous_button_clicked(self):
+        BACKWARDS = False
         self.is_autonomous.data = True
         rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
         self.manual_autonomous_pub.publish(self.is_autonomous)
 
     def sternformost_button_clicked(self):
-        pass
+        BACKWARDS = True
+        self.is_autonomous.data = True
+        rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
+        self.manual_autonomous_pub.publish(self.is_autonomous)
 
     def callback_ranking(self, msg):
         self.ranking_list.setText(msg.data)
