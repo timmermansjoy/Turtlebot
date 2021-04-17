@@ -30,15 +30,11 @@ class Pilot():
             #msg.angular.z = msg.angular.z + self.lidar_message.angular.z * 0.7
             rospy.loginfo('publishing to pilot from autonomous_controller')
             self.publish_to_pilot(msg)
-        else:
-            pass
 
     def callback_manual_controller(self, msg):
         if not self.is_autonomous:
             rospy.loginfo('publishing to pilot from manual_controller')
             self.publish_to_pilot(msg)
-        else:
-            pass
 
     def publish_to_pilot(self, msg):
         rospy.loginfo('advertising to topic /cmd_vel with linear x value of ' + str(msg.linear.x) + ' and angular z value of ' + str(msg.angular.z))

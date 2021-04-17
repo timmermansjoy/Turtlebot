@@ -9,11 +9,19 @@
 to run this project you have to get the [ROSNoeticDocker](https://github.com/PXLAIRobotics/ROSNoeticDocker.git)
 clone this repo into the `/Projects/catkin_ws_src` directory
 
-once inside run the following command in different terminals:
+once inside run the following command to build the solution:
+
+```bash
+cd ~/Projects/catkin_ws && catkin_make --pkg referee && source devel/setup.bash
+```
 
 ## Rommel
 
-**RECOMMENDED** run the bash file `rommel.sh`
+**RECOMMENDED** run the file `rommel.sh`
+
+```bash
+sh ~/Projects/catkin_ws/src/AnR2021G02/rommel.sh
+```
 
 alternative:
 
@@ -30,7 +38,13 @@ alternative:
 
 ## Backwards
 
-**RECOMMENDED** run the bash file `backwards.sh`
+**RECOMMENDED** run the file `backwards.sh`
+
+```bash
+sh ~/Projects/catkin_ws/src/AnR2021G02/backwards.sh
+```
+
+alternative:
 
 ```bash
 [terminal 1] $ sternformost
@@ -46,9 +60,19 @@ alternative:
 
 Our systems layout ![Layout](img/Architecture.png)
 
-all systems work independently of eachother. Only the vision has to be active for it to start self driving.
-Lidar makes obstacle avoidance better as expected.
+all systems work independently of eachother. When all systems are engagde the LIDAR is the master of the vision.
+It will first avoid an obstacle and the vision will correct afterwards to stay on track.
 
 # Kown issues
 
-- There is a small change the car will avoid a object by going off track
+- 15% chance the car will avoid a object by going off track
+- 30% chance on getting stuck on tree
+
+# Extra
+
+### Things we are proud of
+
+- Implimented LIDAR system with no online resources
+- Smoothness on cornering when driving backwards
+- Smoothness on obstacle avoidance with LIDAR
+- Decently documented code

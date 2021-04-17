@@ -24,23 +24,19 @@ class Stern4most_vision_AI2:
         self.running = True
 
         # ---- Subscribers ----
-        # Get image from turtle
         self.video_sub = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
         rospy.loginfo('subscribed to topic /camera/rgb/image_raw')
 
-        # Get boolean to drive backwards from dashboard
         self.sternformost_sub = rospy.Subscriber('sternformost', Bool, self.callback_sternformost)
-        self.BACKWARDS = self.sternformost_sub
 
         # ---- Publishers ----
-        # Send turning values to the controller (Pilot)
         self.controller_pub = rospy.Publisher('autonomous_controller', Twist, queue_size=10)
         rospy.loginfo('created publisher for topic autonomous_controller')
 
-        # Send boolean when crossing a checkpoint
         self.sector_crossed_pub = rospy.Publisher('sector_crossed', Bool, queue_size=10)
         rospy.loginfo('created publisher for topic sector_crossed')
 
+        # ---- Initial variables ----
         self.vel = Twist()
         self.gotYellow = False
         self.sector_crossed = Bool()
@@ -50,7 +46,7 @@ class Stern4most_vision_AI2:
         self.image = None
         self.imageLock = Lock()
         self.lidar_message = Twist()
-        self.sternformost = Bool()
+        self.BACKWARDS = Bool()
         self.statusMessage = ''
         self.connected = False
         self.redrawTimer = rospy.Timer(rospy.Duration(GUI_UPDATE_PERIOD), self.callback_redraw)
@@ -66,6 +62,14 @@ class Stern4most_vision_AI2:
             raise Exception("Failed to convert to OpenCV image")
 
     def callback_redraw(self, event):
+        """
+        looks at the image and:
+        - Calculates the turning angle and publishes that to the pilot
+        - Checks if we have driven over a checkpoint and publishes that to the referee
+        returns: Nothing
+        """
+
+        # Rreprocess the image
         if self.running == True and self.image is not None:
             self.imageLock.acquire()
             try:
@@ -74,13 +78,9 @@ class Stern4most_vision_AI2:
             finally:
                 self.imageLock.release()
             image_cv = cv2.resize(image_cv, dsize=(800, 550), interpolation=cv2.INTER_CUBIC)
-            ang_val = utils.getLaneCurve(image_cv, self.BACKWARDS, 2)
-            if utils.checkPoint(image_cv) and not self.gotYellow:
-                self.gotYellow = True
-            elif not utils.checkPoint(image_cv) and self.gotYellow:
-                self.gotYellow = False
-                rospy.loginfo('SECTOR CROSSED')
-                self.sector_crossed_pub.publish(self.sector_crossed)
+
+            # ---- Corner radius ----
+            ang_val = utils.getLaneCurve(image_cv, self.BACKWARDS.data, 2)
             rospy.loginfo('advertising to topic autonomous_controller with linear x value of ' + str(self.vel.linear.x) + ' and angular z value of ' + str(self.vel.angular.z))
             self.publish(ang_val)
 
@@ -89,6 +89,14 @@ class Stern4most_vision_AI2:
             if key == 27:  # Esc key top stop
                 cv2.destroyAllWindows()
                 self.running = False
+
+            # ---- Checkpoint ----
+            if utils.checkPoint(image_cv) and not self.gotYellow:
+                self.gotYellow = True
+            elif not utils.checkPoint(image_cv) and self.gotYellow:
+                self.gotYellow = False
+                rospy.loginfo('SECTOR CROSSED')
+                self.sector_crossed_pub.publish(self.sector_crossed)
 
     def callback_image_raw(self, data):
         self.imageLock.acquire()
@@ -99,14 +107,14 @@ class Stern4most_vision_AI2:
 
     def publish(self, ang_val):
         self.vel.angular.z = ang_val
-        self.vel.linear.x = 0.27
-        if self.BACKWARDS:
+        self.vel.linear.x = 0.25
+        if self.BACKWARDS.data:
             self.vel.linear.x = -0.15
 
         self.controller_pub.publish(self.vel)
 
     def callback_sternformost(self, data):
-        self.sternformost = data
+        self.BACKWARDS = data
 
     # def callback_lidar_controller(self, msg):
         #self.lidar_message = msg
@@ -116,9 +124,9 @@ if __name__ == '__main__':
     rospy.init_node('stern4most_vision_AI2')
     rospy.loginfo('node stern4most_vision_AI2 has been initialized')
 
-    display = Stern4most_vision_AI2()
+    vision = Stern4most_vision_AI2()
 
-    while display.is_running():
+    while vision.is_running():
         time.sleep(5)
 
     rospy.spin()
