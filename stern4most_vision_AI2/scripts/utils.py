@@ -9,7 +9,6 @@ avgVal = 2
 
 def detected_tree_branch(img):
     wT, hT, c = img.shape
-    # pointOfInterest = [220, 405, 35, 400] ==> oude waarden
     pointOfInterest = [215, 400, 30, 395]
     points = valTrackbars(pointOfInterest)
     imgTreeBranch = warpImg(img, points, wT, hT)
@@ -192,14 +191,14 @@ def getLaneCurve(img, BACKWARDS, display=0):
     imgWarpPoints = __drawPoints(img, points)
 
     # step 3 get curvature of line in image
-    minPer_mid = 0.2 if BACKWARDS else 0.5
+    minPer_mid = 0.49 if BACKWARDS else 0.5
     minPer_base = 0.4 if BACKWARDS else 0.6
     region = 3 if BACKWARDS else 4
     midPoint, imgHist = getHistogram(imgWarp, display=True, minPer=minPer_mid, region=region)
     basePoint, imgHist = getHistogram(imgWarp, display=True, minPer=minPer_base)
     curveRaw = basePoint-midPoint
 
-    # step 4 avarage curve rate
+    # step 4 average curve rate
     curvelist.append(curveRaw)
     if len(curvelist) > avgVal:
         curvelist.pop(0)

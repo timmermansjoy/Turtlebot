@@ -28,6 +28,7 @@ class Stern4most_vision_AI2:
         rospy.loginfo('subscribed to topic /camera/rgb/image_raw')
 
         self.sternformost_sub = rospy.Subscriber('sternformost', Bool, self.callback_sternformost)
+        rospy.loginfo('subscribed to topic sternformost')
 
         # ---- Publishers ----
         self.controller_pub = rospy.Publisher('autonomous_controller', Twist, queue_size=10)
@@ -109,7 +110,7 @@ class Stern4most_vision_AI2:
         self.vel.angular.z = ang_val
         self.vel.linear.x = 0.25
         if self.BACKWARDS.data:
-            self.vel.linear.x = -0.15
+            self.vel.linear.x = -0.1
 
         self.controller_pub.publish(self.vel)
 
