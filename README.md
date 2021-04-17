@@ -1,7 +1,7 @@
 # AnR2021G02
 
 <p align="center">
-  <img width="500px" src="https://s3-eu-west-1.amazonaws.com/robosavvy/prodImages/turtlebot3/turtlebotPi.jpg">
+  <img width="500px" src="https://spectrum.ieee.org/image/MjI0MDU1NA.jpeg">
 </p>
 
 # Run
