@@ -17,23 +17,29 @@ import utils
 
 GUI_UPDATE_PERIOD = 0.10  # Seconds
 
-BACKWARDS = False
-
 
 class Stern4most_vision_AI2:
 
     def __init__(self):
         self.running = True
+
+        # ---- Subscribers ----
+        # Get image from turtle
         self.video_sub = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
         rospy.loginfo('subscribed to topic /camera/rgb/image_raw')
 
+        # Get boolean to drive backwards from dashboard
+        self.sternformost_sub = rospy.Subscriber('sternformost', Bool, self.callback_sternformost)
+        self.BACKWARDS = self.sternformost_sub
+
+        # ---- Publishers ----
+        # Send turning values to the controller (Pilot)
         self.controller_pub = rospy.Publisher('autonomous_controller', Twist, queue_size=10)
         rospy.loginfo('created publisher for topic autonomous_controller')
 
+        # Send boolean when crossing a checkpoint
         self.sector_crossed_pub = rospy.Publisher('sector_crossed', Bool, queue_size=10)
         rospy.loginfo('created publisher for topic sector_crossed')
-
-        self.sternformost_sub = rospy.Subscriber('sternformost', Bool, self.callback_sternformost)
 
         self.vel = Twist()
         self.gotYellow = False
@@ -45,11 +51,8 @@ class Stern4most_vision_AI2:
         self.imageLock = Lock()
         self.lidar_message = Twist()
         self.sternformost = Bool()
-
         self.statusMessage = ''
-
         self.connected = False
-
         self.redrawTimer = rospy.Timer(rospy.Duration(GUI_UPDATE_PERIOD), self.callback_redraw)
 
     def is_running(self):
@@ -71,7 +74,7 @@ class Stern4most_vision_AI2:
             finally:
                 self.imageLock.release()
             image_cv = cv2.resize(image_cv, dsize=(800, 550), interpolation=cv2.INTER_CUBIC)
-            ang_val = utils.getLaneCurve(image_cv, self.sternformost.data, 2)
+            ang_val = utils.getLaneCurve(image_cv, self.BACKWARDS, 2)
             if utils.checkPoint(image_cv) and not self.gotYellow:
                 self.gotYellow = True
             elif not utils.checkPoint(image_cv) and self.gotYellow:
@@ -97,7 +100,7 @@ class Stern4most_vision_AI2:
     def publish(self, ang_val):
         self.vel.angular.z = ang_val
         self.vel.linear.x = 0.25
-        if self.sternformost.data:
+        if self.BACKWARDS:
             self.vel.linear.x = -0.15
 
         self.controller_pub.publish(self.vel)
