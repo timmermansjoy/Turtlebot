@@ -63,7 +63,7 @@ Our systems layout ![Layout](img/Architecture.png)
 all systems work independently of eachother. When all systems are engagde the LIDAR is the master of the vision.
 It will first avoid an obstacle and the vision will correct afterwards to stay on track.
 
-# Kown issues
+# Known issues
 
 - 15% chance the car will avoid a object by going off track
 - 30% chance on getting stuck on tree
