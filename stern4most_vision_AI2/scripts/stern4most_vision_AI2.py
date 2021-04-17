@@ -45,7 +45,6 @@ class Stern4most_vision_AI2:
         self.rate = rospy.Rate(10)
         self.image = None
         self.imageLock = Lock()
-        self.lidar_message = Twist()
         self.BACKWARDS = Bool()
         self.statusMessage = ''
         self.connected = False
@@ -69,7 +68,7 @@ class Stern4most_vision_AI2:
         returns: Nothing
         """
 
-        # Rreprocess the image
+        # Preprocess the image
         if self.running == True and self.image is not None:
             self.imageLock.acquire()
             try:
@@ -115,9 +114,6 @@ class Stern4most_vision_AI2:
 
     def callback_sternformost(self, data):
         self.BACKWARDS = data
-
-    # def callback_lidar_controller(self, msg):
-        #self.lidar_message = msg
 
 
 if __name__ == '__main__':
