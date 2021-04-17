@@ -78,6 +78,11 @@ It will first avoid an obstacle and the vision will correct afterwards to stay o
 - Smoothness on obstacle avoidance with LIDAR
 - Decently documented code
 
+### Things we tried
+
+- Use the included gmapping script to map the ciruit and plot a course on it
+- Impliment a machine learning model in the AI node
+
 ### Full run
 
 <a href="https://youtu.be/CVHOaJUBfbA
