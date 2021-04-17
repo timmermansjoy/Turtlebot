@@ -11,7 +11,7 @@ def detected_tree_branch(img):
     wT, hT, c = img.shape
     # pointOfInterest = [220, 405, 35, 400] ==> oude waarden
     pointOfInterest = [215, 400, 30, 395]
-    points = valTrackbars(pointOfInterest)
+    points = POI_to_screenPoints(pointOfInterest)
     imgTreeBranch = warpImg(img, points, wT, hT)
 
     lab = cv2.cvtColor(imgTreeBranch, cv2.COLOR_BGR2LAB)
@@ -31,14 +31,14 @@ def detected_tree_branch(img):
 
 def checkPoint(img):
     """
-    if we ride over a checkpoint
+    Detects if we drive over an checkpoint
     returns: boolean
     """
 
     # transform image (get bottom of image)
     wT, hT, c = img.shape
     pointOfIntrest = [214, 405, 0, 400]
-    points = valTrackbars(pointOfIntrest)
+    points = POI_to_screenPoints(pointOfIntrest)
     imgCheckpoint = warpImg(img, points, wT, hT)
 
     # detect color
@@ -85,7 +85,7 @@ def warpImg(img, points, w, h, inv=False):
     return imgWarp
 
 
-def valTrackbars(points, wT=770, hT=434):
+def POI_to_screenPoints(points, wT=770, hT=434):
     """
     puts the points of intrest into an array with 4 values to crop the image
     returns: array
@@ -187,7 +187,7 @@ def getLaneCurve(img, BACKWARDS, display=0):
     hT, wT, c = img.shape
     # topWidth, topHeight, bottomWidth, bottomHeight
     pointOfIntrest = [120, 370, 0, 550] if BACKWARDS else [270, 340, 0, 550]
-    points = valTrackbars(pointOfIntrest)
+    points = POI_to_screenPoints(pointOfIntrest)
     imgWarp = warpImg(imgThres, points, wT, hT)
     imgWarpPoints = __drawPoints(img, points)
 
