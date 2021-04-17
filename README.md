@@ -67,6 +67,7 @@ It will first avoid an obstacle and the vision will correct afterwards to stay o
 
 - 15% chance the car will avoid a object by going off track
 - 30% chance on getting stuck on tree
+- can only take inside corners while driving sternformost
 
 # Extra
 
@@ -76,3 +77,9 @@ It will first avoid an obstacle and the vision will correct afterwards to stay o
 - Smoothness on cornering when driving backwards
 - Smoothness on obstacle avoidance with LIDAR
 - Decently documented code
+
+### Full run
+
+<a href="https://youtu.be/CVHOaJUBfbA
+" target="_blank"><img src="https://i9.ytimg.com/vi/CVHOaJUBfbA/mqdefault.jpg?time=1618676100000&sqp=CIST7IMG&rs=AOn4CLC1erSrYL7QpNTPwJDQYHU5Z_hC_g"
+alt="Full" width="350"/></a>
