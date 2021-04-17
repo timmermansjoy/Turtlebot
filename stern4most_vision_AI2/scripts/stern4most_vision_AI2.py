@@ -99,7 +99,7 @@ class Stern4most_vision_AI2:
 
     def publish(self, ang_val):
         self.vel.angular.z = ang_val
-        self.vel.linear.x = 0.25
+        self.vel.linear.x = 0.27
         if self.BACKWARDS:
             self.vel.linear.x = -0.15
 

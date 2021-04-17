@@ -12,11 +12,11 @@ from geometry_msgs.msg import Twist
 # Angles with a value between 310 and 360 will be considered angles to our right.
 
 SPEED = 0.27
-MAX_DISTANCE = 1
-MIN_ANGLE_LEFT = 3
+MAX_DISTANCE = 1.0
+MIN_ANGLE_LEFT = 0
 MAX_ANGLE_LEFT = 45
 MIN_ANGLE_RIGHT = 315
-MAX_ANGLE_RIGHT = 357
+MAX_ANGLE_RIGHT = 360
 
 
 class LaserListener():
