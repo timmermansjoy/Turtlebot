@@ -24,6 +24,7 @@ import os
 GUI_UPDATE_PERIOD = 16  # ms
 BACKWARDS = True
 
+
 class stern4most_dashboard_AI2(QWidget):
 
     def __init__(self):
@@ -102,7 +103,7 @@ class stern4most_dashboard_AI2(QWidget):
         button_layout.addWidget(self.stop_button, 1, 1)
         button_layout.addWidget(self.right_button, 1, 2)
         button_layout.addWidget(self.backward_button, 2, 1)
-        button_layout.addWidget(self.autonomous_button, 3, 1)
+        button_layout.addWidget(self.autonomous_button, 3, 0)
         button_layout.addWidget(self.sternformost_button, 3, 2)
 
         self.setLayout(page_layout)
