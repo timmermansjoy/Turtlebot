@@ -32,19 +32,33 @@ class stern4most_dashboard_AI2(QWidget):
 
         self.bridge = CvBridge()
         self.init_subscriber()
-
-        self.controller_pub = rospy.Publisher('manual_controller', Twist, queue_size=10)
-        rospy.loginfo('created publisher for topic manual_controller')
-        self.manual_autonomous_pub = rospy.Publisher('manual_autonomous', Bool, queue_size=10)
-        rospy.loginfo('created publisher for topic manual_autonomous')
-        self.ranking_sub = rospy.Subscriber('dashboard_ranking', String, self.callback_ranking)
-        rospy.loginfo('subscribed to topic dashboard_ranking')
-        self.sternformost_pub = rospy.Publisher('sternformost', Bool, queue_size=10)
         self.rate = rospy.Rate(10)
         self.vel = Twist()
         self.is_autonomous = Bool()
         self.sternformost = Bool()
+        self.recording = Bool()
+        self.visionMode = Bool()
         self.sternformost.data = False
+
+        # ---- Subscribers ----
+        self.ranking_sub = rospy.Subscriber('dashboard_ranking', String, self.callback_ranking)
+        rospy.loginfo('subscribed to topic dashboard_ranking')
+
+        # ---- Publishers ----
+        self.controller_pub = rospy.Publisher('manual_controller', Twist, queue_size=10)
+        rospy.loginfo('created publisher for topic manual_controller')
+
+        self.manual_autonomous_pub = rospy.Publisher('manual_autonomous', Bool, queue_size=10)
+        rospy.loginfo('created publisher for topic manual_autonomous')
+
+        self.sternformost_pub = rospy.Publisher('sternformost', Bool, queue_size=10)
+        rospy.loginfo('created publisher for topic sternformost')
+
+        self.recording_pub = rospy.Publisher('record', Bool, queue_size=10)
+        rospy.loginfo('created publisher for topic record')
+
+        self.visionmode_pub = rospy.Publisher('visionmode', Bool, queue_size=10)
+        rospy.loginfo('created publisher for topic visionmode')
 
         # Setup the GUI and start its threading
         self.init_gui()
@@ -98,13 +112,21 @@ class stern4most_dashboard_AI2(QWidget):
         self.sternformost_button = QPushButton("Drive sternformost")
         self.sternformost_button.clicked.connect(self.sternformost_button_clicked)
 
+        self.record_button = QPushButton("Record")
+        self.record_button.clicked.connect(self.recording_button_clicked)
+
+        self.vision_button = QPushButton("Vision")
+        self.vision_button.clicked.connect(self.vision_button_clicked)
+
         button_layout.addWidget(self.forward_button, 0, 1)
         button_layout.addWidget(self.left_button, 1, 0)
         button_layout.addWidget(self.stop_button, 1, 1)
         button_layout.addWidget(self.right_button, 1, 2)
         button_layout.addWidget(self.backward_button, 2, 1)
-        button_layout.addWidget(self.autonomous_button, 3, 0)
-        button_layout.addWidget(self.sternformost_button, 3, 2)
+        button_layout.addWidget(self.autonomous_button, 2, 0)
+        button_layout.addWidget(self.sternformost_button, 2, 2)
+        button_layout.addWidget(self.record_button, 4, 2)
+        button_layout.addWidget(self.vision_button, 4, 0)
 
         self.setLayout(page_layout)
 
@@ -211,6 +233,16 @@ class stern4most_dashboard_AI2(QWidget):
         self.manual_autonomous_pub.publish(self.is_autonomous)
         rospy.loginfo('advertising to topic sternformost with value ' + str(self.sternformost.data))
         self.sternformost_pub.publish(self.sternformost)
+
+    def recording_button_clicked(self):
+        self.recording.data = True
+        rospy.loginfo('advertising to topic record with value ' + str(self.recording.data))
+        self.recording_pub.publish(self.recording)
+
+    def vision_button_clicked(self):
+        self.visionMode = True
+        rospy.loginfo('advertising to topic visionmode with value ' + str(self.visionMode))
+        self.visionmode_pub.publish(self.visionMode)
 
     def callback_ranking(self, msg):
         self.ranking_list.setText(msg.data)

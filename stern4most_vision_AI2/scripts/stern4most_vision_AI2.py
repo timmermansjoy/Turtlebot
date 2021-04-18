@@ -30,6 +30,9 @@ class Stern4most_vision_AI2:
         self.sternformost_sub = rospy.Subscriber('sternformost', Bool, self.callback_sternformost)
         rospy.loginfo('subscribed to topic sternformost')
 
+        self.visionmode_sub = rospy.Subscriber('visionmode', Bool, self.callback_visionmode)
+        rospy.loginfo('subscribed to topic sternformost')
+
         # ---- Publishers ----
         self.controller_pub = rospy.Publisher('autonomous_controller', Twist, queue_size=10)
         rospy.loginfo('created publisher for topic autonomous_controller')
@@ -50,6 +53,7 @@ class Stern4most_vision_AI2:
         self.statusMessage = ''
         self.connected = False
         self.redrawTimer = rospy.Timer(rospy.Duration(GUI_UPDATE_PERIOD), self.callback_redraw)
+        self.visionMode = 0
 
     def is_running(self):
         return self.running
@@ -80,7 +84,7 @@ class Stern4most_vision_AI2:
             image_cv = cv2.resize(image_cv, dsize=(800, 550), interpolation=cv2.INTER_CUBIC)
 
             # ---- Corner radius ----
-            ang_val = utils.getLaneCurve(image_cv, self.BACKWARDS.data, 2)
+            ang_val = utils.getLaneCurve(image_cv, self.BACKWARDS.data, self.visionMode)
             rospy.loginfo('advertising to topic autonomous_controller with linear x value of ' + str(self.vel.linear.x) + ' and angular z value of ' + str(self.vel.angular.z))
             self.publish(ang_val)
 
@@ -115,6 +119,10 @@ class Stern4most_vision_AI2:
 
     def callback_sternformost(self, data):
         self.BACKWARDS = data
+
+    def callback_visionmode(self, data):
+        if data.data:
+            self.visionMode = (self.visionMode + 1) % 3
 
 
 if __name__ == '__main__':

@@ -27,7 +27,6 @@ class Pilot():
 
     def callback_autonomous_controller(self, msg):
         if self.is_autonomous and not self.object_detected:
-            #msg.angular.z = msg.angular.z + self.lidar_message.angular.z * 0.7
             rospy.loginfo('publishing to pilot from autonomous_controller')
             self.publish_to_pilot(msg)
 

@@ -153,3 +153,4 @@ vision_test
 CMakeLists.txt
 lidar_test
 vision
+core

@@ -31,10 +31,12 @@ class AI:
         self.image = None
         self.imageLock = Lock()
         self.lidar_message = Twist()
-        self.BACKWARDS = Bool()
+        self.STEERING = Twist()
+        self.RECORD = False
+        self.recording_step = 0
         self.statusMessage = ''
         self.connected = False
-        self.redrawTimer = rospy.Timer(rospy.Duration(GUI_UPDATE_PERIOD), self.main)
+        self.redrawTimer = rospy.Timer(rospy.Duration(GUI_UPDATE_PERIOD), self.collect_data_and_save)
 
         # ---- Subscribers ----
         self.video_sub = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
@@ -42,6 +44,12 @@ class AI:
 
         self.lidar_sub = rospy.Subscriber("/scan", LaserScan, self.callback_lidar_scan)
         rospy.loginfo("Subscribed to topic /scan")
+
+        self.record_sub = rospy.Subscriber('record', Bool, self.callback_record)
+        rospy.loginfo('subscribed to topic record')
+
+        self.turning_sub = rospy.Subscriber('manual_controller', Twist, self.callback_steering)
+        rospy.loginfo('subscribed to topic manual_controller')
 
     # ---- Callbacks ----
     def callback_image_raw(self, data):
@@ -61,6 +69,13 @@ class AI:
             data_perSweep.append(values)
             index += 1
 
+    def callback_record(self, data):
+        if data.data == True:
+            self.RECORD = not self.RECORD
+
+    def callback_steering(self, data):
+        self.STEERING = data
+
     # ---- Helpers ----
     def convert_ros_to_opencv(self, ros_image):
         try:
@@ -69,7 +84,7 @@ class AI:
         except CvBridgeError as error:
             raise Exception("Failed to convert to OpenCV image")
 
-    def main(self, event):
+    def collect_data_and_save(self, event):
         # Preprocess the image
         if self.running == True and self.image is not None:
             self.imageLock.acquire()
@@ -80,29 +95,21 @@ class AI:
                 self.imageLock.release()
             image_cv = cv2.resize(image_cv, dsize=(228, 156), interpolation=cv2.INTER_CUBIC)
 
-        # Get stearing angle
-        # TODO need to impliment
-        steering = 0.2
-        record = 0
-        index = 0
-        startRecording = True
-        while index <= 3:
-            if startRecording:  # later change to (if recording button is pressed)
-                if record == 0:
-                    print('Recording Started ...')
-                record += 1
-                sleep(0.300)
-                if record == 1:
-                    data_collection.saveData(image_cv, steering)
-                elif index % 3 == 0:
-                    data_collection.saveLog()
-                    record = 0
-                index += 1
+        if self.RECORD:  # later change to (if recording button is pressed)
+            if self.recording_step == 0:
+                rospy.loginfo('Recording ...')
+                self.recording_step += 1
+            sleep(0.300)
+            if self.recording_step == 1:
+                data_collection.saveData(image_cv, self.STEERING.angular.z)
+        if not self.RECORD and self.recording_step == 1:
+            data_collection.saveLog()
+            self.recording_step = 0
 
-            # motor.move(throttle, -steering)
+        # motor.move(throttle, -steering)
 
 
-if __name__ == "__main__":
+if __name__ == "__collect_data_and_save__":
     rospy.init_node("AI_listener")
     AI()
     rospy.spin()

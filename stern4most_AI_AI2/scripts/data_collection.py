@@ -11,6 +11,7 @@ in the log file.
 import pandas as pd
 import os
 import cv2
+import rospy
 from datetime import datetime
 
 global imgList, steeringList
@@ -22,7 +23,6 @@ steeringList = []
 
 # GET CURRENT DIRECTORY PATH
 myDirectory = os.path.join(os.getcwd(), 'Data')
-# print(myDirectory)
 
 # CREATE A NEW FOLDER BASED ON THE PREVIOUS FOLDER COUNT
 while os.path.exists(os.path.join(myDirectory, f'IMG{str(countFolder)}')):
@@ -36,11 +36,10 @@ def saveData(img, steering):
     global imgList, steeringList
     now = datetime.now()
     timestamp = str(datetime.timestamp(now)).replace('.', '')
-    #print("timestamp =", timestamp)
     fileName = os.path.join(newPath, f'Image_{timestamp}.jpg')
     cv2.imwrite(fileName, img)
     imgList.append(fileName)
-    steeringList.append(steering)
+    steeringList.append(round(steering, 2))
 
 
 def saveLog():
@@ -52,8 +51,8 @@ def saveLog():
     }
     dataFrame = pd.DataFrame(rawData)
     dataFrame.to_csv(os.path.join(myDirectory, f'log_{str(countFolder)}.csv'), index=False, header=False)
-    print('Log Saved')
-    print('Total Images: ', len(imgList))
+    rospy.loginfo('Log Saved')
+    rospy.loginfo('Total Images: ' + str(len(imgList)))
 
 
 if __name__ == '__main__':
