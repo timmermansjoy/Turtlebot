@@ -1,30 +1,31 @@
+#!/usr/bin/env python3
+
 import rospy
 import cv2
+import math
 from cv_bridge import CvBridge, CvBridgeError
 from time import sleep
 
-import data_collection
+from threading import Lock
+from sensor_msgs.msg import Image
+from geometry_msgs.msg import Twist
+from std_msgs.msg import Bool
+from threading import Lock
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import LaserScan
 
+import data_collection
+
+
 maxThrottle = 0.3
 record = 0
-
 GUI_UPDATE_PERIOD = 0.10  # Seconds
 
 
 class AI:
-
     def __init__(self):
+        # Initial values
         self.running = True
-
-        # ---- Subscribers ----
-        self.video_sub = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
-        rospy.loginfo('subscribed to topic /camera/rgb/image_raw')
-
-        self.subscriber = rospy.Subscriber("/scan", LaserScan, self.callback_scan)
-        rospy.loginfo("Subscribed to topic /scan")
-
         self.bridge = CvBridge()
         self.rate = rospy.Rate(10)
         self.image = None
@@ -33,8 +34,16 @@ class AI:
         self.BACKWARDS = Bool()
         self.statusMessage = ''
         self.connected = False
-        self.redrawTimer = rospy.Timer(rospy.Duration(GUI_UPDATE_PERIOD), self.callback_redraw)
+        self.redrawTimer = rospy.Timer(rospy.Duration(GUI_UPDATE_PERIOD), self.main)
 
+        # ---- Subscribers ----
+        self.video_sub = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
+        rospy.loginfo('subscribed to topic /camera/rgb/image_raw')
+
+        self.lidar_sub = rospy.Subscriber("/scan", LaserScan, self.callback_lidar_scan)
+        rospy.loginfo("Subscribed to topic /scan")
+
+    # ---- Callbacks ----
     def callback_image_raw(self, data):
         self.imageLock.acquire()
         try:
@@ -42,6 +51,17 @@ class AI:
         finally:
             self.imageLock.release()
 
+    def callback_lidar_scan(self, data):
+        data_perSweep = []
+        index = 0
+        object_found = False
+        for value in data.ranges:
+            current_angle = data.angle_min + (data.angle_increment * index)
+            values = [current_angle, value]
+            data_perSweep.append(values)
+            index += 1
+
+    # ---- Helpers ----
     def convert_ros_to_opencv(self, ros_image):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(ros_image, "bgr8")
@@ -49,7 +69,7 @@ class AI:
         except CvBridgeError as error:
             raise Exception("Failed to convert to OpenCV image")
 
-    def main(self):
+    def main(self, event):
         # Preprocess the image
         if self.running == True and self.image is not None:
             self.imageLock.acquire()
@@ -61,23 +81,25 @@ class AI:
             image_cv = cv2.resize(image_cv, dsize=(228, 156), interpolation=cv2.INTER_CUBIC)
 
         # Get stearing angle
-        # ---- need to impliment ----
+        # TODO need to impliment
         steering = 0.2
-        record == 0
-        startRecording = False
-        while True:
+        record = 0
+        index = 0
+        startRecording = True
+        while index <= 3:
             if startRecording:  # later change to (if recording button is pressed)
                 if record == 0:
                     print('Recording Started ...')
                 record += 1
                 sleep(0.300)
                 if record == 1:
-                    data_collection.saveData(image_cv, self.lidar_message, steering)
-                elif record == 2:
+                    data_collection.saveData(image_cv, steering)
+                elif index % 3 == 0:
                     data_collection.saveLog()
                     record = 0
+                index += 1
 
-            motor.move(throttle, -steering)
+            # motor.move(throttle, -steering)
 
 
 if __name__ == "__main__":

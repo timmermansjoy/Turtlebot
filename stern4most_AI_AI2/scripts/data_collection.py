@@ -13,7 +13,7 @@ import os
 import cv2
 from datetime import datetime
 
-global imgList, LIDARList, steeringList
+global imgList, steeringList
 countFolder = 0
 count = 0
 imgList = []
@@ -31,7 +31,7 @@ newPath = myDirectory + "/IMG"+str(countFolder)
 os.makedirs(newPath)
 
 
-def saveData(img, lidar, steering=0.2):
+def saveData(img, steering):
     """SAVE IMAGES IN THE FOLDER"""
     global imgList, steeringList
     now = datetime.now()
@@ -40,7 +40,6 @@ def saveData(img, lidar, steering=0.2):
     fileName = os.path.join(newPath, f'Image_{timestamp}.jpg')
     cv2.imwrite(fileName, img)
     imgList.append(fileName)
-    LIDARList.append(lidar)
     steeringList.append(steering)
 
 
@@ -49,7 +48,6 @@ def saveLog():
     # global imgList, LIDARList, steeringList
     rawData = {
         'Image': imgList,
-        'Lidar': LIDARList,
         'Steering': steeringList
     }
     dataFrame = pd.DataFrame(rawData)
