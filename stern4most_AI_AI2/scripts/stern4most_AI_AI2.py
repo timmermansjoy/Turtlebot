@@ -10,7 +10,6 @@ from threading import Lock
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Bool
-from threading import Lock
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import LaserScan
 
@@ -109,7 +108,8 @@ class AI:
         # motor.move(throttle, -steering)
 
 
-if __name__ == "__collect_data_and_save__":
+if __name__ == "__main__":
+    print("test")
     rospy.init_node("AI_listener")
     AI()
     rospy.spin()
