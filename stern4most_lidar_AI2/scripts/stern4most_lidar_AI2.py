@@ -23,8 +23,7 @@ class LaserListener():
         self.sternformost_sub = rospy.Subscriber("sternformost", Bool, self.callback_sternformost)
         rospy.loginfo("subscribed to topic sternformost")
 
-        self.BACKWARDS = Bool()
-        self.BACKWARDS.data = False
+        self.BACKWARDS = False
 
         # The speed is set to a static value of 0.27. The maximum distance that will be considered 'close' is set to 1.
         # Angles with a value between 0 and 40 will be considered as angles to our left.
@@ -124,14 +123,14 @@ class LaserListener():
             print("No object(s) found in range.")
     
     def callback_sternformost(self, data):
-        self.BACKWARDS = data
+        self.BACKWARDS.data = data
 
     def publish(self, ang_vel):
         """
         This method takes an int, sets it as the angular.z value of the Twist message that was declared at the top of this file, and publishes it to the lidar_controller topic.
         """
         self.vel.angular.z = ang_vel
-        rospy.loginfo('publishing value: ' + str(self.vel.angular.z))
+        rospy.loginfo('publishing value: z: ' + str(self.vel.angular.z) + ' x: ' + str(self.vel.linear.x))
         self.lidar_pub.publish(self.vel)
 
 
