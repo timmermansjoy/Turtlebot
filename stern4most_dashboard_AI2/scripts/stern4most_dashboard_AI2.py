@@ -80,16 +80,35 @@ class stern4most_dashboard_AI2(QWidget):
         # Add a place to show the image
         page_layout = QtWidgets.QVBoxLayout()
         image_layout = QtWidgets.QHBoxLayout()
+        ranking_layout = QtWidgets.QVBoxLayout()
         button_layout = QtWidgets.QGridLayout()
 
         page_layout.addLayout(image_layout)
         page_layout.addLayout(button_layout)
+        image_layout.addLayout(ranking_layout)
 
         self.image_frame = QtWidgets.QLabel()
         image_layout.addWidget(self.image_frame)
 
-        self.ranking_list = QtWidgets.QLabel()
-        image_layout.addWidget(self.ranking_list)
+        self.player_name = QtWidgets.QLabel()
+        self.player_name.setText('Name: AI2')
+        ranking_layout.addWidget(self.player_name)
+        
+        self.round = QtWidgets.QLabel()
+        self.round.setText('Round: 1')
+        ranking_layout.addWidget(self.round)
+
+        self.sector = QtWidgets.QLabel()
+        self.sector.setText('Sector: 1')
+        ranking_layout.addWidget(self.sector)
+
+        self.total_time = QtWidgets.QLabel()
+        self.total_time.setText('Total time: 0.0')
+        ranking_layout.addWidget(self.total_time)
+
+        self.last_sector_time = QtWidgets.QLabel()
+        self.last_sector_time.setText('Last sector time: 0.0')
+        ranking_layout.addWidget(self.last_sector_time)
 
         self.forward_button = QPushButton("Forward")
         self.forward_button.clicked.connect(self.forward_button_clicked)
@@ -259,9 +278,36 @@ class stern4most_dashboard_AI2(QWidget):
         self.visionmode_pub.publish(self.visionMode)
 
     def callback_ranking(self, msg):
-        self.ranking_list.setText(msg.data)
-        self.ranking_list.resize(self.ranking_list.sizeHint())
+        r, s, total_time, last_sector_time = self.parse_ranking(msg.data)
 
+        self.round.setText('Round: ' + r)
+        self.round.resize(self.round.sizeHint())
+
+        self.sector.setText('Sector: ' + s)
+        self.sector.resize(self.sector.sizeHint())
+
+        self.total_time.setText('Total time: ' + total_time)
+        self.total_time.resize(self.total_time.sizeHint())
+
+        self.last_sector_time.setText('Last sector time: ' + last_sector_time)
+        self.last_sector_time.resize(self.last_sector_time.sizeHint())
+
+
+    #[AI2,1,0,0,0]
+
+    def parse_ranking(self, data):
+        message = data.strip('[]()')
+        rospy.loginfo(message)
+        message = message.replace('\'', '')
+        rospy.loginfo(message)
+        ranking = message.replace(' ', '').split(',')
+        rospy.loginfo(ranking)
+        r = ranking[1]
+        s = ranking[2]
+        total_time = round(float(ranking[3]), 2)
+        last_sector_time = round(float(ranking[4]), 2)
+
+        return r, s, str(total_time), str(last_sector_time)
 
 if __name__ == "__main__":
     rospy.init_node("stern4most_dashboard_AI2")
