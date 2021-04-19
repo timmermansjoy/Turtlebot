@@ -55,11 +55,3 @@ def saveLog():
     rospy.loginfo('Total Images: ' + str(len(imgList)))
 
 
-if __name__ == '__main__':
-    cap = cv2.VideoCapture(1)
-    for x in range(10):
-        _, img = cap.read()
-        saveData(img, 0.5)
-        cv2.waitKey(1)
-        cv2.imshow("Image", img)
-    saveLog()
