@@ -53,5 +53,3 @@ def saveLog():
     dataFrame.to_csv(os.path.join(myDirectory, f'log_{str(countFolder)}.csv'), index=False, header=False)
     rospy.loginfo('Log Saved')
     rospy.loginfo('Total Images: ' + str(len(imgList)))
-
-
