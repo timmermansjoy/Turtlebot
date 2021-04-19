@@ -38,6 +38,8 @@ class stern4most_dashboard_AI2(QWidget):
         self.sternformost = Bool()
         self.recording = Bool()
         self.visionMode = Bool()
+        self.AI = Bool()
+        self.AI.data = False
         self.sternformost.data = False
 
         # ---- Subscribers ----
@@ -59,6 +61,9 @@ class stern4most_dashboard_AI2(QWidget):
 
         self.visionmode_pub = rospy.Publisher('visionmode', Bool, queue_size=10)
         rospy.loginfo('created publisher for topic visionmode')
+
+        self.AI_pub = rospy.Publisher('drive_ai', Bool, queue_size=10)
+        rospy.loginfo('created publisher for topic drive_ai')
 
         # Setup the GUI and start its threading
         self.init_gui()
@@ -143,6 +148,9 @@ class stern4most_dashboard_AI2(QWidget):
         self.vision_button = QPushButton("Vision")
         self.vision_button.clicked.connect(self.vision_button_clicked)
 
+        self.AI_button = QPushButton("AI")
+        self.AI_button.clicked.connect(self.AI_button_clicked)
+
         button_layout.addWidget(self.forward_button, 0, 1)
         button_layout.addWidget(self.hard_left_button, 0, 0)
         button_layout.addWidget(self.left_button, 1, 0)
@@ -154,6 +162,7 @@ class stern4most_dashboard_AI2(QWidget):
         button_layout.addWidget(self.sternformost_button, 2, 2)
         button_layout.addWidget(self.record_button, 4, 2)
         button_layout.addWidget(self.vision_button, 4, 0)
+        button_layout.addWidget(self.AI_button, 4, 1)
 
         self.setLayout(page_layout)
 
@@ -256,6 +265,7 @@ class stern4most_dashboard_AI2(QWidget):
     def autonomous_button_clicked(self):
         self.sternformost.data = False
         self.is_autonomous.data = True
+        self.AI.data = False
         rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
         self.manual_autonomous_pub.publish(self.is_autonomous)
         rospy.loginfo('advertising to topic sternformost with value ' + str(self.sternformost.data))
@@ -264,10 +274,19 @@ class stern4most_dashboard_AI2(QWidget):
     def sternformost_button_clicked(self):
         self.sternformost.data = True
         self.is_autonomous.data = True
+        self.AI.data = False
         rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
         self.manual_autonomous_pub.publish(self.is_autonomous)
         rospy.loginfo('advertising to topic sternformost with value ' + str(self.sternformost.data))
         self.sternformost_pub.publish(self.sternformost)
+
+    def AI_button_clicked(self):
+        self.AI.data = True
+        self.is_autonomous.data = True
+        rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
+        self.manual_autonomous_pub.publish(self.is_autonomous)
+        rospy.loginfo('advertising to topic drive_ai with value ' + str(self.AI.data))
+        self.ai_pub.publish(self.AI)
 
     def recording_button_clicked(self):
         self.recording.data = True

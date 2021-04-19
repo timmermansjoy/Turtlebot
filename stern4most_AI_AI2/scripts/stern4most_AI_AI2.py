@@ -29,8 +29,9 @@ class AI_driver:
         rospy.loginfo('subscribed to topic /camera/rgb/image_raw')
 
         # ---- Publishers ----
-        self.autonomous_controller_pub = rospy.Publisher('autonomous_controller', Twist, queue_size=10)
+        self.AI_controller_pub = rospy.Publisher('ai_controller', Twist, queue_size=10)
         rospy.loginfo('created publisher for topic autonomous_controller')
+
 
         self.vel = Twist()
         self.vel.linear.x = -0.22
@@ -72,7 +73,7 @@ class AI_driver:
             print(steering * self.steeringSen)
 
             self.vel.angular.z = steering * self.steeringSen
-            self.autonomous_controller_pub.publish(self.vel)
+            self.AI_controller_pub.publish(self.vel)
 
 
 if __name__ == "__main__":

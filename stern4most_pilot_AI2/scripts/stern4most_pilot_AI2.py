@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+a#!/usr/bin/env python3
 
 import rospy
 from geometry_msgs.msg import Twist
@@ -11,17 +11,29 @@ class Pilot():
     def __init__(self):
         self.pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
         rospy.loginfo('created publisher for topic /cmd_vel')
+        
         self.manual_controller_sub = rospy.Subscriber('manual_controller', Twist, self.callback_manual_controller)
         rospy.loginfo('subscribed to topic manual_controller')
+        
         self.autonomous_controller_sub = rospy.Subscriber('autonomous_controller', Twist, self.callback_autonomous_controller)
         rospy.loginfo('subscribed to topic autonomous_controller')
+        
         self.manual_autonomous_sub = rospy.Subscriber('manual_autonomous', Bool, self.callback_manual_autonomous)
         rospy.loginfo('subscribed to topic manual_autonomous')
+        
         self.lidar_controller_sub = rospy.Subscriber('lidar_controller', Twist, self.callback_lidar_controller)
         rospy.loginfo('subscribed to topic lidar_controller')
+
+        self.drive_ai_sub = rospy.Subscriber('drive_ai', Bool, self.callback_drive_ai)
+        rospy.loginfo('subscribed to topic drive_ai')
+
+        self.ai_controller_pub = rospy.Subscriber('ai_controller_pub', Twist, self.callback_ai_controller)
+        rospy.loginfo('subscribed to topic ai_controller_pub')
+
         self.rate = rospy.Rate(10)
         self.stop_vel = Twist()
         self.is_autonomous = False
+        self.drive_ai = Bool()
         self.object_detected = False
         #self.lidar_message = Twist()
 
@@ -45,7 +57,7 @@ class Pilot():
         self.is_autonomous = msg.data
         if not self.is_autonomous:
             self.publish_to_pilot(self.stop_vel)
-        rospy.loginfo('new val is_autonomous: ' + str(self.is_autonomous))
+        rospy.loginfo('new value is_autonomous: ' + str(self.is_autonomous))
 
     def callback_lidar_controller(self, msg):
         # self.lidar_message = msg
@@ -55,6 +67,17 @@ class Pilot():
                 self.publish_to_pilot(msg)
             else:
                 self.object_detected = False
+                
+    def callback_drive_ai(self, msg):
+        rospy.loginfo('changing drive_ai from ' + str(self.drive_ai) + ' to ' + str(msg.data))
+        self.drive_ai = msg
+        rospy.loginfo('new value' + str(self.drive_ai))
+    
+    def callback_ai_controller(self, msg):
+        if self.is_autonomous and self.drive_ai:
+            rospy.loginfo('publishing to pilot from ai_controller')
+            self.publish_to_pilot(self.vel)
+        
 
 
 if __name__ == '__main__':
