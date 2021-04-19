@@ -6,6 +6,7 @@ from referee.srv import *
 
 player_name = "AI2"
 
+
 class stern4most_communication_AI2:
     def __init__(self):
         self.manual_autonomous_pub = rospy.Publisher('manual_autonomous', Bool, queue_size=10)
@@ -27,10 +28,8 @@ class stern4most_communication_AI2:
         self.start_message = Bool()
         self.sector_update = rospy.ServiceProxy('status_update', SectorUpdate)
 
-
     def callback_ranking(self, msg):
         self.ranking_pub.publish(msg)
-
 
     def callback_game_on(self, msg):
         rospy.loginfo('received message from referee: ' + str(msg.data))
@@ -40,9 +39,8 @@ class stern4most_communication_AI2:
             self.manual_autonomous_pub.publish(self.start_message)
             self.sector_update(player_name, int(self.sector))
 
-
     def callback_sector_crossed(self, msg):
-        self.sector = self.sector % 16 + 1 
+        self.sector = self.sector % 16 + 1
         self.sector = 1 if self.sector == 0 else self.sector
         response = self.sector_update(player_name, int(self.sector))
         if response.status == 'WRONG_SECTOR' or response.status == 'FINISHED':
