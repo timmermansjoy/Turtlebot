@@ -22,7 +22,7 @@ class AI_driver:
         self.imageLock = Lock()
         self.bridge = CvBridge()
         # first model trained on first dataset on empty track
-        self.model = load_model('/home/user/Projects/catkin_ws/src/ROS_Robot/stern4most_AI_AI2/models/first.h5')
+        self.model = load_model('/home/user/Projects/catkin_ws/src/ROS_Robot/stern4most_AI_AI2/models/backwards22.h5')
 
         # ---- Subscribers ----
         self.camera_sub = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
@@ -33,7 +33,7 @@ class AI_driver:
         rospy.loginfo('created publisher for topic autonomous_controller')
 
         self.vel = Twist()
-        self.vel.linear.x = 0.22
+        self.vel.linear.x = -0.22
 
      # ---- Callbacks ----
 
