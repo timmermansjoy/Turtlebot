@@ -75,7 +75,7 @@ class Pilot:
         rospy.loginfo('received message from AI')
         if self.drive_ai.data:
             rospy.loginfo('publishing to pilot from ai_controller')
-            self.publish_to_pilot(self.vel)
+            self.publish_to_pilot(msg)
 
 
 if __name__ == '__main__':
