@@ -6,18 +6,7 @@ import sys
 
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
-
-# The speed is set to a static value of 0.27. The maximum distance that will be considered 'close' is set to 1.
-# Angles with a value between 0 and 40 will be considered as angles to our left.
-# Angles with a value between 310 and 360 will be considered angles to our right.
-
-SPEED = 0.27
-MAX_DISTANCE = 1.0
-MIN_ANGLE_LEFT = 0
-MAX_ANGLE_LEFT = 45
-MIN_ANGLE_RIGHT = 315
-MAX_ANGLE_RIGHT = 360
-
+from std_msgs.msg import Bool
 
 class LaserListener():
     def __init__(self):
@@ -31,10 +20,26 @@ class LaserListener():
         self.lidar_pub = rospy.Publisher("lidar_controller", Twist, queue_size=10)
         rospy.loginfo("Created publisher for topic lidar_controller")
 
+        self.sternformost_sub = rospy.Subscriber("sternformost", Bool, self.callback_sternformost)
+        rospy.loginfo("subscribed to topic sternformost")
+
+        self.BACKWARDS = Bool()
+        self.BACKWARDS.data = False
+
+        # The speed is set to a static value of 0.27. The maximum distance that will be considered 'close' is set to 1.
+        # Angles with a value between 0 and 40 will be considered as angles to our left.
+        # Angles with a value between 310 and 360 will be considered angles to our right.
+        self.SPEED = -0.15 if self.BACKWARDS else 0.27
+        self.MAX_DISTANCE = 2.5 if self.BACKWARDS else 1.0
+        self.MIN_ANGLE_LEFT = 135 if self.BACKWARDS else 0
+        self.MAX_ANGLE_LEFT = 180 if self.BACKWARDS else 45
+        self.MIN_ANGLE_RIGHT = 180 if self.BACKWARDS else 315
+        self.MAX_ANGLE_RIGHT = 225 if self.BACKWARDS else 360
+
         # The publisher for the lidar_controller topic will publish Twist messages with a static linear.x value of 0.27.
         # The rate is set to 10.
         self.vel = Twist()
-        self.vel.linear.x = SPEED
+        self.vel.linear.x = self.SPEED
         self.rate = rospy.Rate(10)
 
     def callback_scan(self, data):
@@ -45,15 +50,16 @@ class LaserListener():
         # The weighted values are stored in arrays.
         left_weighted_values = []
         right_weighted_values = []
+        all_angles = []
         index = 0
         weighted_angle = 0
         object_found = False
 
         # The for loop will iterate through all distances found in the data
         for distance in data.ranges:
-
+            all_angles.append(distance)
             # If a distance is less than the MAX_DISTANCE, it is close enough to be considered
-            if distance < MAX_DISTANCE:
+            if distance < self.MAX_DISTANCE:
                 if object_found == False:
                     object_found = True
                 # look at every degree around the robot
@@ -61,11 +67,11 @@ class LaserListener():
                 current_angle = math.degrees(current_angle)
 
                 # If the corresponding angle is between MIN_ANGLE_LEFT and MAX_ANGLE_LEFT, it is considered to be an object to our left.
-                if MIN_ANGLE_LEFT < current_angle < MAX_ANGLE_LEFT:
+                if self.MIN_ANGLE_LEFT < current_angle < self.MAX_ANGLE_LEFT:
 
                     # To make sure that objects right in front of us get a higher weight than objects that are the side,
                     # it is necessary to subtract the current_angle from the MAX_ANGLE_LEFT. This will give an angle of 1 a bigger weight than an angle of 20.
-                    weighted_angle = MAX_ANGLE_LEFT - current_angle
+                    weighted_angle = self.MAX_ANGLE_LEFT - current_angle
 
                     # To make sure that objects that are closer to us get a higher weight than objects that are futher away,
                     # it is necessary to divide the value in weighted_angle by the distance,
@@ -73,18 +79,18 @@ class LaserListener():
                     left_weighted_values.append(weighted_angle / distance)
 
                 # If the corresponding angle is between MIN_ANGLE_RIGHT and MAX_ANGLE_RIGHT, it is considered to be an object to our right.
-                elif MIN_ANGLE_RIGHT < current_angle < MAX_ANGLE_RIGHT:
+                elif self.MIN_ANGLE_RIGHT < current_angle < self.MAX_ANGLE_RIGHT:
 
                     # To make sure that objects right in front of us get a higher weight than objects that are the side,
                     # it is necessary to subtract the MIN_ANGLE_RIGHT from the current_angle. This will give an angle of 360 a bigger weight than an angle of 345.
-                    weighted_angle = current_angle - MIN_ANGLE_RIGHT
+                    weighted_angle = current_angle - self.MIN_ANGLE_RIGHT
 
                     # To make sure that objects that are closer to us get a higher weight than objects that are futher away,
                     # it is necessary to divide the value in weighted_angle by the distance,
                     # since the result of, for example,  1 / 0.5 is bigger than the result of 1 / 1.
                     right_weighted_values.append(weighted_angle / distance)
             index += 1
-
+        print(len(all_angles))
         if object_found == True:
 
             # To determine whether the turtlebot should turn left or right to avoid the found object, we calculate the average of the left_weighted_values and right_weighted_values arrays.
@@ -116,6 +122,9 @@ class LaserListener():
 
         else:
             print("No object(s) found in range.")
+    
+    def callback_sternformost(self, data):
+        self.BACKWARDS = data
 
     def publish(self, ang_vel):
         """
