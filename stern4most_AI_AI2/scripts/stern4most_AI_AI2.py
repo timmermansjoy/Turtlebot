@@ -21,7 +21,8 @@ class AI_driver:
         self.image = None
         self.imageLock = Lock()
         self.bridge = CvBridge()
-        self.model = load_model('/home/user/Projects/catkin_ws/src/ROS_Robot/stern4most_AI_AI2/model.h5')
+        # first model trained on first dataset on empty track
+        self.model = load_model('/home/user/Projects/catkin_ws/src/ROS_Robot/stern4most_AI_AI2/models/first.h5')
 
         # ---- Subscribers ----
         self.camera_sub = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
