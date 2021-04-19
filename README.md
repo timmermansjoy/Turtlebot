@@ -9,6 +9,12 @@
 to run this project you have to get the [ROSNoeticDocker](https://github.com/PXLAIRobotics/ROSNoeticDocker.git)
 clone this repo into the `/Projects/catkin_ws_src` directory
 
+our AI package uses `pandas` so we also have to install this with
+
+```bash
+sudo apt update && sudo apt install -y python3-pandas
+```
+
 once inside run the following command to build the solution:
 
 ```bash
@@ -67,9 +73,8 @@ It will first avoid an obstacle and the vision will correct afterwards to stay o
 
 - 15% chance the car will avoid a object by going off track
 - 30% chance on getting stuck on tree
-- can only take inside corners while driving sternformost
 
-# Extra
+# Extras
 
 ### Things we are proud of
 
@@ -83,7 +88,7 @@ It will first avoid an obstacle and the vision will correct afterwards to stay o
 - Impliment a machine learning model in the AI node
 - Use lane detection
 
-### Full run
+### Full runs
 
 #### Forwards rommel
 

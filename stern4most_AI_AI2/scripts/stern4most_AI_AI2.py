@@ -109,7 +109,7 @@ class AI:
 
 
 if __name__ == "__main__":
-    print("test")
+
     rospy.init_node("AI_listener")
     AI()
     rospy.spin()
