@@ -32,7 +32,7 @@ then
 
     # start AI system
     tmux new-window -t $SESSION:5 -n 'AI'
-    tmux send-keys -t 'AI' "rosrun stern4most_AI_AI2 stern4most_AI_AI2.py" C-m
+    tmux send-keys -t 'AI' "rosrun stern4most_AI_AI2 stern4most_AI_Record_AI2.py" C-m
 
     tmux join-pane -v -s 2 -t 1
     tmux join-pane -v -s 3 -t 1
@@ -44,7 +44,7 @@ then
     tmux send-keys -t 'referee' "rosrun referee referee_service.py -r 2 -s 15" C-m
 
     tmux new-window -t $SESSION:3 -n 'communication'
-    tmux send-keys -t 'communication' "rosrun stern4most_communication_AI2 stern4most_AI_Record_AI2.py" C-m
+    tmux send-keys -t 'communication' "rosrun stern4most_communication_AI2 stern4most_communication_AI2.py" C-m
 
     tmux join-pane -v -s 3 -t 2
 
