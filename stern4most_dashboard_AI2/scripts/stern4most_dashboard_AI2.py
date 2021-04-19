@@ -103,6 +103,12 @@ class stern4most_dashboard_AI2(QWidget):
         self.right_button = QPushButton("Right")
         self.right_button.clicked.connect(self.right_button_clicked)
 
+        self.hard_left_button = QPushButton("hard-left")
+        self.hard_left_button.clicked.connect(self.hard_left_button_clicked)
+
+        self.hard_right_button = QPushButton("hard-right")
+        self.hard_right_button.clicked.connect(self.hard_right_button_clicked)
+
         self.stop_button = QPushButton("STOP")
         self.stop_button.clicked.connect(self.stop_button_clicked)
 
@@ -119,8 +125,10 @@ class stern4most_dashboard_AI2(QWidget):
         self.vision_button.clicked.connect(self.vision_button_clicked)
 
         button_layout.addWidget(self.forward_button, 0, 1)
+        button_layout.addWidget(self.hard_left_button, 0, 0)
         button_layout.addWidget(self.left_button, 1, 0)
         button_layout.addWidget(self.stop_button, 1, 1)
+        button_layout.addWidget(self.hard_right_button, 0, 2)
         button_layout.addWidget(self.right_button, 1, 2)
         button_layout.addWidget(self.backward_button, 2, 1)
         button_layout.addWidget(self.autonomous_button, 2, 0)
@@ -184,16 +192,22 @@ class stern4most_dashboard_AI2(QWidget):
         self.move_waffle(self.vel.linear.x * -1, self.vel.angular.z * -1)
 
     def forward_button_clicked(self):
-        self.move_waffle(0.05, 0)
+        self.move_waffle(0.2, 0)
 
     def backward_button_clicked(self):
-        self.move_waffle(-0.05, 0)
+        self.move_waffle(-0.2, 0)
 
     def left_button_clicked(self):
         self.move_waffle(0, 0.02)
 
     def right_button_clicked(self):
         self.move_waffle(0, -0.02)
+
+    def hard_left_button_clicked(self):
+        self.move_waffle(0, 0.2)
+
+    def hard_right_button_clicked(self):
+        self.move_waffle(0, -0.2)
 
     def move_waffle(self, line_vel, ang_vel):
         self.is_autonomous.data = False

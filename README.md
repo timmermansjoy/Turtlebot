@@ -80,11 +80,25 @@ It will first avoid an obstacle and the vision will correct afterwards to stay o
 
 ### Things we tried
 
-- Use the included gmapping script to map the ciruit and plot a course on it
 - Impliment a machine learning model in the AI node
+- Use lane detection
 
 ### Full run
 
+#### Forwards rommel
+
 <a href="https://youtu.be/CVHOaJUBfbA
-" target="_blank"><img src="https://i9.ytimg.com/vi/CVHOaJUBfbA/mqdefault.jpg?time=1618676100000&sqp=CIST7IMG&rs=AOn4CLC1erSrYL7QpNTPwJDQYHU5Z_hC_g"
-alt="Full" width="350"/></a>
+" target="_blank"><img src="https://www.iconpacks.net/icons/2/free-youtube-logo-icon-2431-thumb.png"
+alt="Full" width="150"/></a>
+
+#### Backwards empty
+
+<a href="https://youtu.be/0KUafmbeS6w
+" target="_blank"><img src="https://www.iconpacks.net/icons/2/free-youtube-logo-icon-2431-thumb.png"
+alt="Full" width="150"/></a>
+
+#### Backwards rommel in under 5 min
+
+<a href="https://youtu.be/dQw4w9WgXcQ
+" target="_blank"><img src="https://www.iconpacks.net/icons/2/free-youtube-logo-icon-2431-thumb.png"
+alt="Full" width="150"/></a>
