@@ -27,10 +27,10 @@ class AI_driver:
 
         # Choose model and get its location
         self.model_name = 'first'
-        model_path = self.find_model(self.model_name)
+        self.model_path = self.find_model(self.model_name)
 
         # load model
-        self.model = load_model(model_path)
+        self.model = load_model(self.model_path)
 
         # ---- Subscribers ----
         self.camera_sub = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
@@ -65,11 +65,12 @@ class AI_driver:
         img = img / 255
         return img
 
-    def find_model(model_name):
+    def find_model(self, model_name):
+        model_name = f'{model_name}.h5'
         path = os.path.realpath("")
         for root, dirs, files in os.walk(path):
             if model_name in files:
-                return os.path.join(root, f'{model_name}.h5')
+                return os.path.join(root, model_name)
         return None
 
     def main(self):
