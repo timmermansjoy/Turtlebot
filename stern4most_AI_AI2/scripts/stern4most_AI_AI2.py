@@ -21,8 +21,11 @@ class AI_driver:
         self.image = None
         self.imageLock = Lock()
         self.bridge = CvBridge()
+        self.vel = Twist()
+        self.vel.linear.x = -0.22
         # first model trained on first dataset on empty track
-        self.model = load_model('/home/user/Projects/catkin_ws/src/ROS_Robot/stern4most_AI_AI2/models/backwards22.h5')
+        # self.model = load_model('/home/user/Projects/catkin_ws/src/AnR2021G02/stern4most_AI_AI2/models/first.h5')
+        self.model = load_model('/home/user/Projects/catkin_ws/src/AnR2021G02/stern4most_AI_AI2/models/backwards22.h5')
 
         # ---- Subscribers ----
         self.camera_sub = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
@@ -31,10 +34,6 @@ class AI_driver:
         # ---- Publishers ----
         self.AI_controller_pub = rospy.Publisher('ai_controller', Twist, queue_size=10)
         rospy.loginfo('created publisher for topic autonomous_controller')
-
-
-        self.vel = Twist()
-        self.vel.linear.x = -0.22
 
      # ---- Callbacks ----
 
@@ -70,7 +69,7 @@ class AI_driver:
             img = np.array([img])
 
             steering = float(self.model.predict(img))
-            print(steering * self.steeringSen)
+            rospy.loginfo("{}".format(steering * self.steeringSen))
 
             self.vel.angular.z = steering * self.steeringSen
             self.AI_controller_pub.publish(self.vel)

@@ -98,7 +98,7 @@ class stern4most_dashboard_AI2(QWidget):
         self.player_name = QtWidgets.QLabel()
         self.player_name.setText('Name: AI2')
         ranking_layout.addWidget(self.player_name)
-        
+
         self.round = QtWidgets.QLabel()
         self.round.setText('Round: 1')
         ranking_layout.addWidget(self.round)
@@ -206,7 +206,8 @@ class stern4most_dashboard_AI2(QWidget):
         rgb_image = cv2.cvtColor(scaled_image, cv2.COLOR_BGR2RGB)
         height, width, channels = rgb_image.shape
         bytes_per_line = channels * width
-        qt_image = QtGui.QImage(rgb_image.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
+        qt_image = QtGui.QImage(
+            rgb_image.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
         self.image_frame.setPixmap(QtGui.QPixmap.fromImage(qt_image))
 
     def convert_ros_to_opencv(self, ros_image):
@@ -286,7 +287,7 @@ class stern4most_dashboard_AI2(QWidget):
         rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
         self.manual_autonomous_pub.publish(self.is_autonomous)
         rospy.loginfo('advertising to topic drive_ai with value ' + str(self.AI.data))
-        self.ai_pub.publish(self.AI)
+        self.AI_pub.publish(self.AI)
 
     def recording_button_clicked(self):
         self.recording.data = True
@@ -313,8 +314,7 @@ class stern4most_dashboard_AI2(QWidget):
         self.last_sector_time.setText('Last sector time: ' + last_sector_time)
         self.last_sector_time.resize(self.last_sector_time.sizeHint())
 
-
-    #[AI2,1,0,0,0]
+    # [AI2,1,0,0,0]
 
     def parse_ranking(self, data):
         message = data.strip('[]()')
@@ -329,6 +329,7 @@ class stern4most_dashboard_AI2(QWidget):
         last_sector_time = round(float(ranking[4]), 2)
 
         return r, s, str(total_time), str(last_sector_time)
+
 
 if __name__ == "__main__":
     rospy.init_node("stern4most_dashboard_AI2")
