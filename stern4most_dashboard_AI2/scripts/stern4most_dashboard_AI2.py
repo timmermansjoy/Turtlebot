@@ -239,6 +239,8 @@ class stern4most_dashboard_AI2(QWidget):
             self.vel.linear.x += line_vel
         else:
             self.vel.linear.x = 0.22
+        if self.vel.linear.x < -0.2:
+            self.vel.linear.x = -0.2
         self.vel.linear.y = 0
         self.vel.linear.z = 0
         self.vel.angular.x = 0
