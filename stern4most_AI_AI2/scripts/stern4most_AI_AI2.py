@@ -4,6 +4,7 @@ import rospy
 import cv2
 import numpy as np
 import math
+import os
 from tensorflow.keras.models import load_model
 from cv_bridge import CvBridge, CvBridgeError
 from time import sleep
@@ -22,10 +23,16 @@ class AI_driver:
         self.imageLock = Lock()
         self.bridge = CvBridge()
         self.vel = Twist()
-        self.vel.linear.x = -0.22
+        self.vel.linear.x = 0.22
+
+        model = 'first'
+        dir_path = os.path.dirname(os.path.realpath("models"))
+        model_path = os.path.join(dir_path, "models", f'{model}.h5')
+        print(model_path)
+
         # first model trained on first dataset on empty track
-        # self.model = load_model('/home/user/Projects/catkin_ws/src/AnR2021G02/stern4most_AI_AI2/models/first.h5')
-        self.model = load_model('/home/user/Projects/catkin_ws/src/AnR2021G02/stern4most_AI_AI2/models/backwards22.h5')
+        # self.model = load_model(model_path)
+        # self.model = load_model('/home/user/Projects/catkin_ws/src/ROS_Robot/first.h5')
 
         # ---- Subscribers ----
         self.camera_sub = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
