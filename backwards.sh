@@ -30,14 +30,19 @@ then
     tmux new-window -t $SESSION:4 -n 'LIDAR'
     tmux send-keys -t 'LIDAR' "rosrun stern4most_lidar_AI2 stern4most_lidar_AI2.py" C-m
 
+    # start AI recording system
+    tmux new-window -t $SESSION:5 -n 'Record'
+    tmux send-keys -t 'Record' "rosrun stern4most_AI_AI2 stern4most_AI_Record_AI2.py" C-m
+
     # start AI system
-    tmux new-window -t $SESSION:5 -n 'AI'
-    tmux send-keys -t 'AI' "rosrun stern4most_AI_AI2 stern4most_AI_Record_AI2.py" C-m
+    tmux new-window -t $SESSION:6 -n 'AI'
+    tmux send-keys -t 'AI' "rosrun stern4most_AI_AI2 stern4most_AI_AI2.py" C-m
 
     tmux join-pane -v -s 2 -t 1
     tmux join-pane -v -s 3 -t 1
     tmux join-pane -v -s 4 -t 1
     tmux join-pane -h -s 5 -t 1
+    tmux join-pane -v -s 6 -t 1
 
     # start referee system
     tmux new-window -t $SESSION:2 -n 'referee'
