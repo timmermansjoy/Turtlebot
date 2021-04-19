@@ -9,10 +9,16 @@
 to run this project you have to get the [ROSNoeticDocker](https://github.com/PXLAIRobotics/ROSNoeticDocker.git)
 clone this repo into the `/Projects/catkin_ws_src` directory
 
-our AI package uses `pandas` so we also have to install this with
+our AI package uses more dependencys so we also have to install this with pip. This is not installed so
 
 ```bash
-sudo apt update && sudo apt install -y python3-pandas
+sudo apt update && sudo apt install -y python3-pip
+```
+
+afterwards install the dependencys with
+
+```
+pip3 install -r requirements.txt
 ```
 
 once inside run the following command to build the solution:
