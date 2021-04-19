@@ -8,6 +8,7 @@ from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Bool
 
+
 class LaserListener():
     def __init__(self):
         # To get the data from the laser, the lidar node has to subscribe to the /scan topic which will return a LaserScan object.
@@ -121,7 +122,7 @@ class LaserListener():
 
         else:
             print("No object(s) found in range.")
-    
+
     def callback_sternformost(self, data):
         self.BACKWARDS.data = data
 
