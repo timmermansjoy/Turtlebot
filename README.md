@@ -64,10 +64,16 @@ alternative:
 
 # Architecture
 
-Our systems layout ![Layout](img/Architecture.png)
+Our systems layout:
+
+![Layout](img/Architecture.png)
 
 all systems work independently of eachother. When all systems are engagde the LIDAR is the master of the vision.
 It will first avoid an obstacle and the vision will correct afterwards to stay on track.
+
+### Dashboard
+
+![Layout](img/Dashboard.png)
 
 # Known issues
 
@@ -76,17 +82,51 @@ It will first avoid an obstacle and the vision will correct afterwards to stay o
 
 # Extras
 
+## Mahcine learning
+
+in the last 2 days we tried to get our hands dirty with machine learning. This because it didnt really looked that difficult
+and wanted to try something different, [george hotz](https://youtu.be/ZtpWTJ7Jsh8) was a big insiration in the motivation.
+
+Our machine learning was in 3 steps:
+
+### Data collection
+
+With data collection we created a module that collects our data. This data is the image seen by our turtlebot and the steering angle it currently has.
+We can use this data to train. Our first dataset was made by driving from the start to the 6th sector of the track. We drove back and forward on this track to get 6000 images / datapoints
+
+this was done in `stern4most_AI_AI2/stern4most_AI_Record_AI2.py`
+
+### Training
+
+With the dataset we created. we started to train our moddel with the help of some online references. We used: scikit-learn and tensorflow for this training.
+At the end of our training we had a loss function of 0.03. in our first attempt.
+
+![Layout](img/loss_funtion.png)
+
+this was done in `training/training.py`
+
+### Implimenting
+
+With our trained moddel we implimented this almost the same way as our vision module, only we used our model to predict the steering angles. Our moddel was trained well enough on the small piece of the track
+to drive the rest of the track flawlessly
+
+---
+
 ### Things we are proud of
 
 - Implimented LIDAR system with no online resources
+- Impliment Machine learning
 - Smoothness on cornering when driving backwards
 - Smoothness on obstacle avoidance with LIDAR
 - Decently documented code
+- Mostly structured code
 
-### Things we tried
+### Things we could have done better
 
-- Impliment a machine learning model in the AI node
-- Use lane detection
+- Better vision system
+- LIDAR and vision working in symbiosis
+
+---
 
 ### Full runs
 
