@@ -41,7 +41,7 @@ then
 
     # start referee system
     tmux new-window -t $SESSION:2 -n 'referee'
-    tmux send-keys -t 'referee' "rosrun referee referee_service.py" C-m
+    tmux send-keys -t 'referee' "rosrun referee referee_service.py -r 2 -s 15" C-m
 
     tmux new-window -t $SESSION:3 -n 'communication'
     tmux send-keys -t 'communication' "rosrun stern4most_communication_AI2 stern4most_communication_AI2.py" C-m
