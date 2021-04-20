@@ -38,6 +38,7 @@ class stern4most_communication_AI2:
         self.sector = 0 if self.BACKWARDS else 1
         
 
+    # ---- Callbacks ----
     def callback_ranking(self, msg):
         self.ranking_pub.publish(msg)
 
@@ -58,6 +59,7 @@ class stern4most_communication_AI2:
         response = self.sector_update(player_name, int(self.sector))
         if response.status == 'WRONG_SECTOR' or response.status == 'FINISHED':
             self.start_message.data = False
+            rospy.loginfo('WRONG SECTOR - STOPPING TURTLEBOT')
             self.manual_autonomous_pub.publish(self.start_message)
     
     def callback_sternformost(self, msg):
