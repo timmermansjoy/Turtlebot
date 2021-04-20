@@ -45,13 +45,17 @@ then
     tmux join-pane -v -s 6 -t 1
 
     # start referee system
-    tmux new-window -t $SESSION:2 -n 'referee'
+    tmux new-window -t $SESSION:2 -n 'referee_service'
     tmux send-keys -t 'referee' "rosrun referee referee_service.py -r 2 -s 15" C-m
 
     tmux new-window -t $SESSION:3 -n 'communication'
     tmux send-keys -t 'communication' "rosrun stern4most_communication_AI2 stern4most_communication_AI2.py" C-m
 
+    tmux new-window -t $SESSION:4 -n 'start_publisher'
+    tmux send-keys -t 'start_publisher' "rosrun referee start_publisher.py 1" C-m
+
     tmux join-pane -v -s 3 -t 2
+    tmux join-pane -h -s 4 -t 2
 
 fi
 
