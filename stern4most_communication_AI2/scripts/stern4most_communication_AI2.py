@@ -26,8 +26,8 @@ class stern4most_communication_AI2:
         self.BACKWARDS = False
 
         # ---- Publishers ----
-        self.manual_autonomous_pub = rospy.Publisher('manual_autonomous', Bool, queue_size=10)
-        rospy.loginfo('created publisher for topic manual_autonomous')
+        self.drive_ai_pub = rospy.Publisher('drive_ai', Bool, queue_size=10)
+        rospy.loginfo('created publisher for topic drive_ai')
 
         self.ranking_pub = rospy.Publisher('dashboard_ranking', String, queue_size=10)
         rospy.loginfo('created publisher for topic dashboard_ranking')
@@ -46,7 +46,7 @@ class stern4most_communication_AI2:
         if msg.data == 'Start':
             self.start_message.data = True
             rospy.loginfo('publishing to topic manual_autonomous with value ' + str(self.start_message.data))
-            self.manual_autonomous_pub.publish(self.start_message)
+            self.drive_ai_pub.publish(self.start_message)
 
             rospy.loginfo('Calling sector_update')
             self.sector_update(player_name, int(self.sector))
@@ -60,7 +60,7 @@ class stern4most_communication_AI2:
         if response.status == 'WRONG_SECTOR' or response.status == 'FINISHED':
             self.start_message.data = False
             rospy.loginfo('WRONG SECTOR - STOPPING TURTLEBOT')
-            self.manual_autonomous_pub.publish(self.start_message)
+            self.drive_ai_pub.publish(self.start_message)
     
     def callback_sternformost(self, msg):
         self.BACKWARDS = msg.data
