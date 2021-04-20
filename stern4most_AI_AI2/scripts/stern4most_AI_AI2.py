@@ -24,7 +24,7 @@ class AI_driver:
         self.bridge = CvBridge()
         
         # Choose model and get its location
-        self.model_name = 'nikki_first'
+        self.model_name = 'nikki_fourth'
         self.model_path = self.find_model(self.model_name)
 
         # load model
