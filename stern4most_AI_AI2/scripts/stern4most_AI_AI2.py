@@ -18,7 +18,7 @@ from sensor_msgs.msg import Image
 
 class AI_driver:
     def __init__(self):
-        self.steeringSen = 1.2
+        self.steeringSen = 1.4
         self.image = None
         self.imageLock = Lock()
         self.bridge = CvBridge()
@@ -26,7 +26,7 @@ class AI_driver:
         self.vel.linear.x = 0.22
 
         # Choose model and get its location
-        self.model_name = 'first'
+        self.model_name = 'second'
         self.model_path = self.find_model(self.model_name)
 
         # load model
@@ -82,7 +82,7 @@ class AI_driver:
             img = np.array([img])
 
             steering = float(self.model.predict(img))
-            rospy.loginfo("{}".format(steering * self.steeringSen))
+            rospy.loginfo(f'{(steering * self.steeringSen)} on model {self.model_name}')
 
             self.vel.angular.z = steering * self.steeringSen
             self.AI_controller_pub.publish(self.vel)

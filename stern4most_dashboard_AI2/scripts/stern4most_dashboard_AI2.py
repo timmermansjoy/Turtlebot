@@ -106,11 +106,11 @@ class stern4most_dashboard_AI2(QWidget):
         ranking_layout.addWidget(self.sector)
 
         self.total_time = QtWidgets.QLabel()
-        self.total_time.setText('Total time: 0.0')
+        self.total_time.setText('Total time: 00:00')
         ranking_layout.addWidget(self.total_time)
 
         self.last_sector_time = QtWidgets.QLabel()
-        self.last_sector_time.setText('Last sector time: 0.0')
+        self.last_sector_time.setText('Last sector time: 00:00')
         ranking_layout.addWidget(self.last_sector_time)
 
         self.forward_button = QPushButton("Forward")
@@ -216,7 +216,7 @@ class stern4most_dashboard_AI2(QWidget):
             raise Exception("Failed to convert to OpenCV image")
 
     def stop_button_clicked(self):
-        self.is_autonomous.data = False 
+        self.is_autonomous.data = False
         rospy.loginfo('advertising to topic is_autonomous with value ' + str(self.is_autonomous.data))
         self.manual_autonomous_pub.publish(self.is_autonomous)
 
@@ -282,7 +282,7 @@ class stern4most_dashboard_AI2(QWidget):
         self.rate.sleep()
 
     def autonomous_button_clicked(self):
-        self.is_autonomous.data = True        
+        self.is_autonomous.data = True
         rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
         self.manual_autonomous_pub.publish(self.is_autonomous)
 
@@ -296,7 +296,7 @@ class stern4most_dashboard_AI2(QWidget):
 
         self.rate.sleep()
 
-    def sternformost_button_clicked(self):    
+    def sternformost_button_clicked(self):
         self.is_autonomous.data = True
         rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
         self.manual_autonomous_pub.publish(self.is_autonomous)
@@ -319,7 +319,7 @@ class stern4most_dashboard_AI2(QWidget):
         self.sternformost.data = False
         rospy.loginfo('advertising to topic sternformost with value ' + str(self.sternformost.data))
         self.sternformost_pub.publish(self.sternformost)
-        
+
         self.AI.data = True
         rospy.loginfo('advertising to topic drive_ai with value ' + str(self.AI.data))
         self.AI_pub.publish(self.AI)
@@ -370,7 +370,18 @@ class stern4most_dashboard_AI2(QWidget):
         r = ranking[1]
         s = ranking[2]
         total_time = round(float(ranking[3]), 2)
+        min = int(total_time // 60)
+        sec = int(total_time % 60)
+        min = f'0{min}' if min < 10 else min
+        sec = f'0{sec}' if sec < 10 else sec
+        total_time = f'{min}:{sec}'
+
         last_sector_time = round(float(ranking[4]), 2)
+        min = int(last_sector_time // 60)
+        sec = int(last_sector_time % 60)
+        min = f'0{min}' if min < 10 else min
+        sec = f'0{sec}' if sec < 10 else sec
+        last_sector_time = f'{min}:{sec}'
 
         return r, s, str(total_time), str(last_sector_time)
 
