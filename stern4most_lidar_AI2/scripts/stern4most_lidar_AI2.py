@@ -124,7 +124,7 @@ class LaserListener():
             print("No object(s) found in range.")
 
     def callback_sternformost(self, data):
-        self.BACKWARDS.data = data
+        self.BACKWARDS = data.data
 
     def publish(self, ang_vel):
         """
