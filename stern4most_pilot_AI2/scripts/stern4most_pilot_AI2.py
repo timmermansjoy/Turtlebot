@@ -9,9 +9,8 @@ import rospy
 
 class Pilot:
     def __init__(self):
-        self.pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
-        rospy.loginfo('created publisher for topic /cmd_vel')
 
+        # ---- Subscribers ----
         self.manual_controller_sub = rospy.Subscriber('manual_controller', Twist, self.callback_manual_controller)
         rospy.loginfo('subscribed to topic manual_controller')
 
@@ -20,21 +19,28 @@ class Pilot:
 
         self.manual_autonomous_sub = rospy.Subscriber('manual_autonomous', Bool, self.callback_manual_autonomous)
         rospy.loginfo('subscribed to topic manual_autonomous')
+        self.is_autonomous = False
 
         self.lidar_controller_sub = rospy.Subscriber('lidar_controller', Twist, self.callback_lidar_controller)
         rospy.loginfo('subscribed to topic lidar_controller')
 
         self.drive_ai_sub = rospy.Subscriber('drive_ai', Bool, self.callback_drive_ai)
         rospy.loginfo('subscribed to topic drive_ai')
+        self.drive_ai = Bool()
 
         self.ai_controller_sub = rospy.Subscriber('ai_controller', Twist, self.callback_ai_controller)
         rospy.loginfo('subscribed to topic ai_controller')
 
+        # ---- Publisher ----
+        self.pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+        rospy.loginfo('created publisher for topic /cmd_vel')
+
         self.rate = rospy.Rate(10)
         self.stop_vel = Twist()
-        self.is_autonomous = False
-        self.drive_ai = Bool()
         self.object_detected = False
+
+
+    # ---- Callbacks ----
 
     def callback_autonomous_controller(self, msg):
         if self.is_autonomous and not self.object_detected and not self.drive_ai.data:
@@ -45,11 +51,6 @@ class Pilot:
         if not self.is_autonomous:
             rospy.loginfo('publishing to pilot from manual_controller')
             self.publish_to_pilot(msg)
-
-    def publish_to_pilot(self, msg):
-        rospy.loginfo('advertising to topic /cmd_vel with linear x value of ' + str(msg.linear.x) + ' and angular z value of ' + str(msg.angular.z))
-        self.pub.publish(msg)
-        self.rate.sleep
 
     def callback_manual_autonomous(self, msg):
         rospy.loginfo('changing is_autonomous from ' + str(self.is_autonomous) + ' to ' + str(msg.data))
@@ -62,6 +63,7 @@ class Pilot:
         if self.is_autonomous:
             if not msg.angular.z == 0:
                 self.object_detected = True
+                rospy.loginfo('publishing to pilot from lidar_controller')
                 self.publish_to_pilot(msg)
             else:
                 self.object_detected = False
@@ -72,10 +74,17 @@ class Pilot:
         rospy.loginfo('new value' + str(self.drive_ai.data))
 
     def callback_ai_controller(self, msg):
-        rospy.loginfo('received message from AI')
         if self.drive_ai.data:
             rospy.loginfo('publishing to pilot from ai_controller')
             self.publish_to_pilot(msg)
+
+    
+    # ---- Helpers ----
+
+    def publish_to_pilot(self, msg):
+        rospy.loginfo('advertising to topic /cmd_vel with linear x value of ' + str(msg.linear.x) + ' and angular z value of ' + str(msg.angular.z))
+        self.pub.publish(msg)
+        self.rate.sleep
 
 
 if __name__ == '__main__':
