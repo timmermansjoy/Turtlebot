@@ -8,7 +8,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 # STEP 1 - INITIALIZE DATA
-path = 'drivingData'
+path = 'Data'
 data = importDataInfo(path)
 
 # STEP 2 - VISUALIZE AND BALANCE DATA

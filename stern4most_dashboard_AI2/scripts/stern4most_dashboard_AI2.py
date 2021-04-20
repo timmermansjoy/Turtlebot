@@ -326,7 +326,18 @@ class stern4most_dashboard_AI2(QWidget):
         r = ranking[1]
         s = ranking[2]
         total_time = round(float(ranking[3]), 2)
+        min = int(total_time // 60)
+        sec = int(total_time % 60)
+        min = f'0{min}' if min < 10 else min
+        sec = f'0{sec}' if sec < 10 else sec
+        total_time = f'{min}:{sec}'
+
         last_sector_time = round(float(ranking[4]), 2)
+        min = int(last_sector_time // 60)
+        sec = int(last_sector_time % 60)
+        min = f'0{min}' if min < 10 else min
+        sec = f'0{sec}' if sec < 10 else sec
+        last_sector_time = f'{min}:{sec}'
 
         return r, s, str(total_time), str(last_sector_time)
 
