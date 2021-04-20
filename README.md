@@ -43,9 +43,12 @@ alternatively, you can manually execute the following commands in seperate termi
 [terminal 3] $ rosrun stern4most_dashboard_AI2 stern4most_dashboard_AI2.py
 [terminal 4] $ rosrun stern4most_lidar_AI2 stern4most_lidar_AI2.py
 [terminal 5] $ rosrun stern4most_vision_AI2 stern4most_vision_AI2.py
-[terminal 6] $ rosrun referee start_publisher.py
-[terminal 7] $ rosrun referee referee_service.py
-[terminal 8] $ rosrun stern4most_communication_AI2 stern4most_communication_AI2.py
+[terminal 6] $ rosrun stern4most_AI_AI2 stern4most_AI_Record_AI2.py
+[terminal 7] $ rosrun stern4most_AI_AI2 stern4most_AI_AI2.py
+[terminal 8] $ rosrun referee start_publisher.py
+[terminal 9] $ rosrun referee referee_service.py
+[terminal 10] $ rosrun stern4most_communication_AI2 stern4most_communication_AI2.py
+[terminal 11] $ rosrun referee start_publisher.py 1
 ```
 
 ## Backwards
@@ -63,9 +66,12 @@ alternatively, you can manually execute the following commands in seperate termi
 [terminal 2] $ rosrun stern4most_pilot_AI2 stern4most_pilot_AI2.py
 [terminal 3] $ rosrun stern4most_dashboard_AI2 stern4most_dashboard_AI2.py
 [terminal 4] $ rosrun stern4most_vision_AI2 stern4most_vision_AI2.py
-[terminal 5] $ rosrun referee start_publisher.py
-[terminal 6] $ rosrun referee referee_service.py
-[terminal 7] $ rosrun stern4most_communication_AI2 stern4most_communication_AI2.py
+[terminal 5] $ rosrun stern4most_AI_AI2 stern4most_AI_Record_AI2.py
+[terminal 6] $ rosrun stern4most_AI_AI2 stern4most_AI_AI2.py
+[terminal 7] $ rosrun referee start_publisher.py
+[terminal 8] $ rosrun referee referee_service.py
+[terminal 9] $ rosrun stern4most_communication_AI2 stern4most_communication_AI2.py
+[terminal 10] $ rosrun referee start_publisher.py 1
 ```
 
 # Architecture
