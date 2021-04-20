@@ -29,9 +29,6 @@ class AI:
         self.rate = rospy.Rate(10)
         self.image = None
         self.imageLock = Lock()
-        self.lidar_message = Twist()
-        self.STEERING = Twist()
-        self.RECORD = False
         self.recording_step = 0
         self.statusMessage = ''
         self.connected = False
@@ -43,12 +40,16 @@ class AI:
 
         self.lidar_sub = rospy.Subscriber("/scan", LaserScan, self.callback_lidar_scan)
         rospy.loginfo("Subscribed to topic /scan")
+        self.lidar_message = Twist()
 
         self.record_sub = rospy.Subscriber('record', Bool, self.callback_record)
         rospy.loginfo('subscribed to topic record')
+        self.RECORD = False
 
         self.turning_sub = rospy.Subscriber('manual_controller', Twist, self.callback_steering)
         rospy.loginfo('subscribed to topic manual_controller')
+        self.STEERING = Twist()
+
 
     # ---- Callbacks ----
     def callback_image_raw(self, data):
@@ -61,7 +62,6 @@ class AI:
     def callback_lidar_scan(self, data):
         data_perSweep = []
         index = 0
-        object_found = False
         for value in data.ranges:
             current_angle = data.angle_min + (data.angle_increment * index)
             values = [current_angle, value]
@@ -94,7 +94,7 @@ class AI:
                 self.imageLock.release()
             image_cv = cv2.resize(image_cv, dsize=(228, 156), interpolation=cv2.INTER_CUBIC)
 
-        if self.RECORD:  # later change to (if recording button is pressed)
+        if self.RECORD:  
             if self.recording_step == 0:
                 rospy.loginfo('Recording ...')
                 self.recording_step += 1
@@ -105,11 +105,9 @@ class AI:
             data_collection.saveLog()
             self.recording_step = 0
 
-        # motor.move(throttle, -steering)
-
 
 if __name__ == "__main__":
-
     rospy.init_node("AI_listener")
+    rospy.loginfo('AI_listener node has been initialized.')
     AI()
     rospy.spin()
