@@ -25,14 +25,12 @@ class AI_driver:
         self.vel = Twist()
         self.vel.linear.x = 0.22
 
-        model = 'first'
-        dir_path = os.path.dirname(os.path.realpath("models"))
-        model_path = os.path.join(dir_path, "models", f'{model}.h5')
-        print(model_path)
+        # Choose model and get its location
+        self.model_name = 'first'
+        self.model_path = self.find_model(self.model_name)
 
-        # first model trained on first dataset on empty track
-        # self.model = load_model(model_path)
-        # self.model = load_model('/home/user/Projects/catkin_ws/src/ROS_Robot/first.h5')
+        # load model
+        self.model = load_model(self.model_path)
 
         # ---- Subscribers ----
         self.camera_sub = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
@@ -66,6 +64,14 @@ class AI_driver:
         img = cv2.resize(img, (200, 66))
         img = img / 255
         return img
+
+    def find_model(self, model_name):
+        model_name = f'{model_name}.h5'
+        path = os.path.realpath("")
+        for root, dirs, files in os.walk(path):
+            if model_name in files:
+                return os.path.join(root, model_name)
+        return None
 
     def main(self):
         if self.image is not None:
