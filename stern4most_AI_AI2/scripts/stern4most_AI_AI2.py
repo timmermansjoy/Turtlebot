@@ -22,9 +22,7 @@ class AI_driver:
         self.image = None
         self.imageLock = Lock()
         self.bridge = CvBridge()
-        self.vel = Twist()
-        self.vel.linear.x = 0.22
-
+        
         # Choose model and get its location
         self.model_name = 'second'
         self.model_path = self.find_model(self.model_name)
@@ -39,8 +37,11 @@ class AI_driver:
         # ---- Publishers ----
         self.AI_controller_pub = rospy.Publisher('ai_controller', Twist, queue_size=10)
         rospy.loginfo('created publisher for topic autonomous_controller')
+        self.vel = Twist()
+        self.vel.linear.x = 0.22
 
-     # ---- Callbacks ----
+
+    # ---- Callbacks ----
 
     def callback_image_raw(self, data):
         self.imageLock.acquire()
@@ -49,6 +50,8 @@ class AI_driver:
         finally:
             self.imageLock.release()
         self.main()
+
+    # ---- Helpers ----
 
     def convert_ros_to_opencv(self, ros_image):
         try:
