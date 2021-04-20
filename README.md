@@ -93,7 +93,7 @@ It will first avoid an obstacle, whereafter the vision will correct to stay on t
 in the last 2 days, we tried to get our hands dirty with machine learning. We did this because it didn't really look that difficult
 and we wanted to try something different. [George Hotz](https://youtu.be/ZtpWTJ7Jsh8) was a big inspiration and motivation for this.
 
-Our machine learning was in 3 steps:
+Our machine learning was done in 3 steps:
 
 ### Data collection
 
