@@ -11,22 +11,8 @@ from std_msgs.msg import Bool
 
 class LaserListener():
     def __init__(self):
-        # To get the data from the laser, the lidar node has to subscribe to the /scan topic which will return a LaserScan object.
-        # The incoming messages will be handled by the callback_scan method.
-        self.subscriber = rospy.Subscriber("/scan", LaserScan, self.callback_scan)
-        rospy.loginfo("Subscribed to topic /scan")
 
-        # To send the info, calculated in this class, back to the pilot node, the lidar node has to have a publisher for the lidar_controller.
-        # It will publish a Twist message, with the queue_size set to 10.
-        self.lidar_pub = rospy.Publisher("lidar_controller", Twist, queue_size=10)
-        rospy.loginfo("Created publisher for topic lidar_controller")
-
-        self.sternformost_sub = rospy.Subscriber("sternformost", Bool, self.callback_sternformost)
-        rospy.loginfo("subscribed to topic sternformost")
-
-        self.BACKWARDS = False
-
-        # The speed is set to a static value of 0.27. The maximum distance that will be considered 'close' is set to 1.
+         # The speed is set to a static value of 0.27. The maximum distance that will be considered 'close' is set to 1.
         # Angles with a value between 0 and 40 will be considered as angles to our left.
         # Angles with a value between 310 and 360 will be considered angles to our right.
         self.SPEED = -0.15 if self.BACKWARDS else 0.27
@@ -35,12 +21,35 @@ class LaserListener():
         self.MAX_ANGLE_LEFT = 180 if self.BACKWARDS else 45
         self.MIN_ANGLE_RIGHT = 180 if self.BACKWARDS else 315
         self.MAX_ANGLE_RIGHT = 225 if self.BACKWARDS else 360
-
+        self.BACKWARDS = False
         # The publisher for the lidar_controller topic will publish Twist messages with a static linear.x value of 0.27.
         # The rate is set to 10.
         self.vel = Twist()
         self.vel.linear.x = self.SPEED
         self.rate = rospy.Rate(10)
+
+        # ---- Subscribers ----
+
+        # To get the data from the laser, the lidar node has to subscribe to the /scan topic which will return a LaserScan object.
+        # The incoming messages will be handled by the callback_scan method.
+        self.subscriber = rospy.Subscriber("/scan", LaserScan, self.callback_scan)
+        rospy.loginfo("Subscribed to topic /scan")
+
+        self.sternformost_sub = rospy.Subscriber("sternformost", Bool, self.callback_sternformost)
+        rospy.loginfo("subscribed to topic sternformost")
+
+
+        # ---- Publishers ----
+
+        # To send the info, calculated in this class, back to the pilot node, the lidar node has to have a publisher for the lidar_controller.
+        # It will publish a Twist message, with the queue_size set to 10.
+        self.lidar_pub = rospy.Publisher("lidar_controller", Twist, queue_size=10)
+        rospy.loginfo("Created publisher for topic lidar_controller")
+
+       
+
+
+    # ---- Callbacks----
 
     def callback_scan(self, data):
         """
@@ -126,6 +135,9 @@ class LaserListener():
     def callback_sternformost(self, data):
         self.BACKWARDS = data.data
 
+
+    # ---- Helpers ----
+    
     def publish(self, ang_vel):
         """
         This method takes an int, sets it as the angular.z value of the Twist message that was declared at the top of this file, and publishes it to the lidar_controller topic.
