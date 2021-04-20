@@ -60,7 +60,7 @@ class Pilot:
         rospy.loginfo('new value is_autonomous: ' + str(self.is_autonomous))
 
     def callback_lidar_controller(self, msg):
-        if self.is_autonomous:
+        if self.is_autonomous and not self.drive_ai.data:
             if not msg.angular.z == 0:
                 self.object_detected = True
                 rospy.loginfo('publishing to pilot from lidar_controller')
