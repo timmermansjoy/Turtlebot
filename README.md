@@ -9,13 +9,13 @@
 to run this project you have to get the [ROSNoeticDocker](https://github.com/PXLAIRobotics/ROSNoeticDocker.git)
 clone this repo into the `/Projects/catkin_ws_src` directory
 
-our AI package uses more dependencys so we also have to install this with pip. This is not installed so
+our AI package uses more dependencies so we also have to install this with pip. This is not installed so
 
 ```bash
 sudo apt update && sudo apt install -y python3-pip
 ```
 
-afterwards install the dependencys with
+afterwards install the dependencies with
 
 ```
 pip3 install -r requirements.txt
@@ -88,7 +88,7 @@ It will first avoid an obstacle and the vision will correct afterwards to stay o
 
 # Extras
 
-## Mahcine learning
+## Machine learning
 
 in the last 2 days we tried to get our hands dirty with machine learning. This because it didnt really looked that difficult
 and wanted to try something different, [george hotz](https://youtu.be/ZtpWTJ7Jsh8) was a big insiration in the motivation.
@@ -120,8 +120,8 @@ to drive the rest of the track flawlessly
 
 ### Things we are proud of
 
-- Implimented LIDAR system with no online resources
-- Impliment Machine learning
+- Implemented LIDAR system with no online resources
+- Implemented Machine learning
 - Smoothness on cornering when driving backwards
 - Smoothness on obstacle avoidance with LIDAR
 - Decently documented code
