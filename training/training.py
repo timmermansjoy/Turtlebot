@@ -4,7 +4,7 @@ import os
 
 
 print('Setting UP')
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 # STEP 1 - INITIALIZE DATA

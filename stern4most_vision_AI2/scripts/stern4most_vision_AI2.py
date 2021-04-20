@@ -21,7 +21,15 @@ GUI_UPDATE_PERIOD = 0.10  # Seconds
 class Stern4most_vision_AI2:
 
     def __init__(self):
-        self.running = True
+
+        # ---- Initial variables ----
+        self.image = None
+        self.gotYellow = False
+        
+        self.imageLock = Lock()
+        self.bridge = CvBridge()
+        self.rate = rospy.Rate(10)
+        self.redrawTimer = rospy.Timer(rospy.Duration(GUI_UPDATE_PERIOD), self.callback_redraw)
 
         # ---- Subscribers ----
         self.video_sub = rospy.Subscriber('/camera/rgb/image_raw', Image, self.callback_image_raw)
@@ -29,41 +37,25 @@ class Stern4most_vision_AI2:
 
         self.sternformost_sub = rospy.Subscriber('sternformost', Bool, self.callback_sternformost)
         rospy.loginfo('subscribed to topic sternformost')
+        self.BACKWARDS = False
 
         self.visionmode_sub = rospy.Subscriber('visionmode', Bool, self.callback_visionmode)
-        rospy.loginfo('subscribed to topic sternformost')
+        rospy.loginfo('subscribed to topic visionmode')
+        self.visionMode = 0
+
 
         # ---- Publishers ----
         self.controller_pub = rospy.Publisher('autonomous_controller', Twist, queue_size=10)
         rospy.loginfo('created publisher for topic autonomous_controller')
+        self.vel = Twist()
 
         self.sector_crossed_pub = rospy.Publisher('sector_crossed', Bool, queue_size=10)
         rospy.loginfo('created publisher for topic sector_crossed')
-
-        # ---- Initial variables ----
-        self.vel = Twist()
-        self.gotYellow = False
         self.sector_crossed = Bool()
         self.sector_crossed.data = True
-        self.bridge = CvBridge()
-        self.rate = rospy.Rate(10)
-        self.image = None
-        self.imageLock = Lock()
-        self.BACKWARDS = Bool()
-        self.statusMessage = ''
-        self.connected = False
-        self.redrawTimer = rospy.Timer(rospy.Duration(GUI_UPDATE_PERIOD), self.callback_redraw)
-        self.visionMode = 0
 
-    def is_running(self):
-        return self.running
 
-    def convert_ros_to_opencv(self, ros_image):
-        try:
-            cv_image = self.bridge.imgmsg_to_cv2(ros_image, "bgr8")
-            return cv_image
-        except CvBridgeError as error:
-            raise Exception("Failed to convert to OpenCV image")
+    # ---- Callbacks ----
 
     def callback_redraw(self, event):
         """
@@ -72,9 +64,9 @@ class Stern4most_vision_AI2:
         - Checks if we have driven over a checkpoint and publishes that to the referee
         returns: Nothing
         """
-
+        
         # Preprocess the image
-        if self.running == True and self.image is not None:
+        if self.image is not None:
             self.imageLock.acquire()
             try:
                 # Convert the captured frame from ROS to OpenCV.
@@ -84,15 +76,13 @@ class Stern4most_vision_AI2:
             image_cv = cv2.resize(image_cv, dsize=(800, 550), interpolation=cv2.INTER_CUBIC)
 
             # ---- Corner radius ----
-            ang_val = utils.getLaneCurve(image_cv, self.BACKWARDS.data, self.visionMode)
-            rospy.loginfo('advertising to topic autonomous_controller with linear x value of ' + str(self.vel.linear.x) + ' and angular z value of ' + str(self.vel.angular.z))
+            ang_val = utils.getLaneCurve(image_cv, self.BACKWARDS, self.visionMode)
             self.publish(ang_val)
 
             # to make sure the cv2 showimage is shown in utils getLaneCurve
             key = cv2.waitKey(5)
             if key == 27:  # Esc key top stop
                 cv2.destroyAllWindows()
-                self.running = False
 
             # ---- Checkpoint ----
             if utils.checkPoint(image_cv) and not self.gotYellow:
@@ -109,29 +99,35 @@ class Stern4most_vision_AI2:
         finally:
             self.imageLock.release()
 
+    def callback_sternformost(self, msg):
+        self.BACKWARDS = msg.data
+
+    def callback_visionmode(self, msg):
+        if msg.data:
+            self.visionMode = (self.visionMode + 1) % 3
+
+
+    # ---- Helpers ----
+
+    def convert_ros_to_opencv(self, ros_image):
+        try:
+            cv_image = self.bridge.imgmsg_to_cv2(ros_image, "bgr8")
+            return cv_image
+        except CvBridgeError as error:
+            raise Exception("Failed to convert to OpenCV image")
+        
     def publish(self, ang_val):
         self.vel.angular.z = ang_val
-        self.vel.linear.x = 0.25
-        if self.BACKWARDS.data:
+        self.vel.linear.x = 0.27
+        if self.BACKWARDS:
             self.vel.linear.x = -0.1
-
+        rospy.loginfo('publishing to topic autonomous_controller with x value: ' + str(self.vel.linear.x) + ' and z value: ' + str(self.vel.angular.z))
         self.controller_pub.publish(self.vel)
 
-    def callback_sternformost(self, data):
-        self.BACKWARDS = data
-
-    def callback_visionmode(self, data):
-        if data.data:
-            self.visionMode = (self.visionMode + 1) % 3
 
 
 if __name__ == '__main__':
     rospy.init_node('stern4most_vision_AI2')
     rospy.loginfo('node stern4most_vision_AI2 has been initialized')
-
-    vision = Stern4most_vision_AI2()
-
-    while vision.is_running():
-        time.sleep(5)
-
+    Stern4most_vision_AI2()
     rospy.spin()

@@ -1,31 +1,22 @@
 #!/usr/bin/env python3
 
+"""
+ _________________________________________ 
+/ Hello stranger, welcome to the utils of \
+\ the vision module                       /
+ ----------------------------------------- 
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     ||
+"""
+
 import cv2
 import numpy as np
 
 curvelist = []
 avgVal = 2
-
-
-def detected_tree_branch(img):
-    wT, hT, c = img.shape
-    pointOfInterest = [215, 400, 30, 395]
-    points = POI_to_screenPoints(pointOfInterest)
-    imgTreeBranch = warpImg(img, points, wT, hT)
-
-    lab = cv2.cvtColor(imgTreeBranch, cv2.COLOR_BGR2LAB)
-    upper_val = np.array([110, 180, 135])
-    lower_val = np.array([10, 115, 120])
-
-    mask = cv2.inRange(lab, lower_val, upper_val)
-
-    tree_branch_detected = np.sum(mask)
-
-    if tree_branch_detected > 2000000:
-        print("Tree found: ", tree_branch_detected)
-        return True
-    print("Tree NOT found: ", tree_branch_detected)
-    return False
 
 
 def checkPoint(img):
@@ -227,8 +218,7 @@ def getLaneCurve(img, BACKWARDS, display=0):
     elif display == 1:
         cv2.imshow('Result', imgResult)
 
-     # NORMALIZATION
-
+    # NORMALIZATION
     curve = curve/100 * 4 if BACKWARDS else curve/100
 
     if curve > 1:
