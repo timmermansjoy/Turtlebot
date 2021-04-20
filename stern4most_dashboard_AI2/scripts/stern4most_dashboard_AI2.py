@@ -66,6 +66,8 @@ class stern4most_dashboard_AI2(QWidget):
         # Setup the GUI and start its threading
         self.init_gui()
 
+    # ---- INIT methods ----
+
     def init_subscriber(self):
         self.ros_image_lock = Lock()
 
@@ -80,94 +82,32 @@ class stern4most_dashboard_AI2(QWidget):
         rospy.loginfo('subscribed to topic /camera/rgb/image_raw')
 
     def init_gui(self):
-        # Add a place to show the image
-        page_layout = QtWidgets.QVBoxLayout()
-        image_layout = QtWidgets.QHBoxLayout()
-        ranking_layout = QtWidgets.QVBoxLayout()
-        button_layout = QtWidgets.QGridLayout()
+        # Add layouts for the image, buttons and ranking
+        self.page_layout = QtWidgets.QVBoxLayout()
+        self.image_layout = QtWidgets.QHBoxLayout()
+        self.ranking_layout = QtWidgets.QVBoxLayout()
+        self.button_layout = QtWidgets.QGridLayout()
 
-        page_layout.addLayout(image_layout)
-        page_layout.addLayout(button_layout)
-        image_layout.addLayout(ranking_layout)
+        self.page_layout.addLayout(self.image_layout)
+        self.page_layout.addLayout(self.button_layout)
+        self.image_layout.addLayout(self.ranking_layout)
 
         self.image_frame = QtWidgets.QLabel()
-        image_layout.addWidget(self.image_frame)
+        self.image_layout.addWidget(self.image_frame)
 
-        self.player_name = QtWidgets.QLabel()
-        self.player_name.setText('Name: AI2')
-        ranking_layout.addWidget(self.player_name)
+        self.create_labels()
 
-        self.round = QtWidgets.QLabel()
-        self.round.setText('Round: 1')
-        ranking_layout.addWidget(self.round)
+        self.create_buttons()
 
-        self.sector = QtWidgets.QLabel()
-        self.sector.setText('Sector: 1')
-        ranking_layout.addWidget(self.sector)
-
-        self.total_time = QtWidgets.QLabel()
-        self.total_time.setText('Total time: 00:00')
-        ranking_layout.addWidget(self.total_time)
-
-        self.last_sector_time = QtWidgets.QLabel()
-        self.last_sector_time.setText('Last sector time: 00:00')
-        ranking_layout.addWidget(self.last_sector_time)
-
-        self.forward_button = QPushButton("Forward")
-        self.forward_button.clicked.connect(self.forward_button_clicked)
-
-        self.backward_button = QPushButton("Backward")
-        self.backward_button.clicked.connect(self.backward_button_clicked)
-
-        self.left_button = QPushButton("Left")
-        self.left_button.clicked.connect(self.left_button_clicked)
-
-        self.right_button = QPushButton("Right")
-        self.right_button.clicked.connect(self.right_button_clicked)
-
-        self.hard_left_button = QPushButton("hard-left")
-        self.hard_left_button.clicked.connect(self.hard_left_button_clicked)
-
-        self.hard_right_button = QPushButton("hard-right")
-        self.hard_right_button.clicked.connect(self.hard_right_button_clicked)
-
-        self.stop_button = QPushButton("STOP")
-        self.stop_button.clicked.connect(self.stop_button_clicked)
-
-        self.autonomous_button = QPushButton("GO TURTLE GOOO")
-        self.autonomous_button.clicked.connect(self.autonomous_button_clicked)
-
-        self.sternformost_button = QPushButton("Drive sternformost")
-        self.sternformost_button.clicked.connect(self.sternformost_button_clicked)
-
-        self.record_button = QPushButton("Record")
-        self.record_button.clicked.connect(self.recording_button_clicked)
-
-        self.vision_button = QPushButton("Vision")
-        self.vision_button.clicked.connect(self.vision_button_clicked)
-
-        self.AI_button = QPushButton("AI")
-        self.AI_button.clicked.connect(self.AI_button_clicked)
-
-        button_layout.addWidget(self.forward_button, 0, 1)
-        button_layout.addWidget(self.hard_left_button, 0, 0)
-        button_layout.addWidget(self.left_button, 1, 0)
-        button_layout.addWidget(self.stop_button, 1, 1)
-        button_layout.addWidget(self.hard_right_button, 0, 2)
-        button_layout.addWidget(self.right_button, 1, 2)
-        button_layout.addWidget(self.backward_button, 2, 1)
-        button_layout.addWidget(self.autonomous_button, 2, 0)
-        button_layout.addWidget(self.sternformost_button, 2, 2)
-        button_layout.addWidget(self.record_button, 4, 2)
-        button_layout.addWidget(self.vision_button, 4, 0)
-        button_layout.addWidget(self.AI_button, 4, 1)
-
-        self.setLayout(page_layout)
+        self.setLayout(self.page_layout)
 
         # Start to update the image on the gui.
         self.gui_timer = QTimer(self)
         self.gui_timer.start(GUI_UPDATE_PERIOD)
         self.gui_timer.timeout.connect(self.update_image_on_gui)
+
+
+    # ---- Callbacks ----
 
     def callback_image_raw(self, image):
         self.ros_image_lock.acquire()
@@ -176,6 +116,125 @@ class stern4most_dashboard_AI2(QWidget):
             self.received_new_data = True
         finally:
             self.ros_image_lock.release()
+    
+    def callback_ranking(self, msg):
+        r, s, total_time, last_sector_time = self.parse_ranking(msg.data)
+
+        self.round.setText('Round: ' + r)
+        self.round.resize(self.round.sizeHint())
+
+        self.sector.setText('Sector: ' + s)
+        self.sector.resize(self.sector.sizeHint())
+
+        self.total_time.setText('Total time: ' + total_time)
+        self.total_time.resize(self.total_time.sizeHint())
+
+        self.last_sector_time.setText('Last sector time: ' + last_sector_time)
+        self.last_sector_time.resize(self.last_sector_time.sizeHint())
+
+        self.rate.sleep()
+    
+
+    # ---- Helpers ----
+    
+    def create_buttons(self): 
+        self.forward_button = QPushButton("Forward")
+        self.forward_button.clicked.connect(self.forward_button_clicked)
+        self.button_layout.addWidget(self.forward_button, 0, 1)
+
+        self.backward_button = QPushButton("Backward")
+        self.backward_button.clicked.connect(self.backward_button_clicked)
+        self.button_layout.addWidget(self.backward_button, 2, 1)
+
+        self.left_button = QPushButton("Left")
+        self.left_button.clicked.connect(self.left_button_clicked)
+        self.button_layout.addWidget(self.left_button, 1, 0)
+
+        self.right_button = QPushButton("Right")
+        self.right_button.clicked.connect(self.right_button_clicked)
+        self.button_layout.addWidget(self.right_button, 1, 2)
+
+        self.hard_left_button = QPushButton("hard-left")
+        self.hard_left_button.clicked.connect(self.hard_left_button_clicked)
+        self.button_layout.addWidget(self.hard_left_button, 0, 0)
+
+        self.hard_right_button = QPushButton("hard-right")
+        self.hard_right_button.clicked.connect(self.hard_right_button_clicked)
+        self.button_layout.addWidget(self.hard_right_button, 0, 2)
+
+        self.stop_button = QPushButton("STOP")
+        self.stop_button.clicked.connect(self.stop_button_clicked)
+        self.button_layout.addWidget(self.stop_button, 1, 1)
+
+        self.autonomous_button = QPushButton("GO TURTLE GOOO")
+        self.autonomous_button.clicked.connect(self.autonomous_button_clicked)
+        self.button_layout.addWidget(self.autonomous_button, 2, 0)
+
+        self.sternformost_button = QPushButton("Drive sternformost")
+        self.sternformost_button.clicked.connect(self.sternformost_button_clicked)
+        self.button_layout.addWidget(self.sternformost_button, 2, 2)
+
+        self.record_button = QPushButton("Record")
+        self.record_button.clicked.connect(self.recording_button_clicked)
+        self.button_layout.addWidget(self.record_button, 4, 2)
+
+        self.vision_button = QPushButton("Vision")
+        self.vision_button.clicked.connect(self.vision_button_clicked)
+        self.button_layout.addWidget(self.vision_button, 4, 0)
+
+        self.AI_button = QPushButton("AI")
+        self.AI_button.clicked.connect(self.AI_button_clicked)
+        self.button_layout.addWidget(self.AI_button, 4, 1)
+
+
+    def create_labels(self):
+        self.player_name = QtWidgets.QLabel()
+        self.player_name.setText('Name: AI2')
+        self.ranking_layout.addWidget(self.player_name)
+
+        self.round = QtWidgets.QLabel()
+        self.round.setText('Round: 1')
+        self.ranking_layout.addWidget(self.round)
+
+        self.sector = QtWidgets.QLabel()
+        self.sector.setText('Sector: 1')
+        self.ranking_layout.addWidget(self.sector)
+
+        self.total_time = QtWidgets.QLabel()
+        self.total_time.setText('Total time: 00:00')
+        self.ranking_layout.addWidget(self.total_time)
+
+        self.last_sector_time = QtWidgets.QLabel()
+        self.last_sector_time.setText('Last sector time: 00:00')
+        self.ranking_layout.addWidget(self.last_sector_time)
+
+    def parse_ranking(self, data):
+        message = data.strip('[]()')
+        rospy.loginfo(message)
+
+        message = message.replace('\'', '')
+        rospy.loginfo(message)
+
+        ranking = message.replace(' ', '').split(',')
+        rospy.loginfo(ranking)
+
+        r = ranking[1]
+        s = ranking[2]
+        total_time = round(float(ranking[3]), 2)
+        min = int(total_time // 60)
+        sec = int(total_time % 60)
+        min = f'0{min}' if min < 10 else min
+        sec = f'0{sec}' if sec < 10 else sec
+        total_time = f'{min}:{sec}'
+
+        last_sector_time = round(float(ranking[4]), 2)
+        min = int(last_sector_time // 60)
+        sec = int(last_sector_time % 60)
+        min = f'0{min}' if min < 10 else min
+        sec = f'0{sec}' if sec < 10 else sec
+        last_sector_time = f'{min}:{sec}'
+
+        return r, s, str(total_time), str(last_sector_time)
 
     def update_image_on_gui(self):
         # Get a new image if there's one and make a copy of it.
@@ -215,6 +274,9 @@ class stern4most_dashboard_AI2(QWidget):
         except CvBridgeError as error:
             raise Exception("Failed to convert to OpenCV image")
 
+
+    # ---- Button Handlers ----
+    
     def stop_button_clicked(self):
         self.is_autonomous.data = False
         rospy.loginfo('advertising to topic is_autonomous with value ' + str(self.is_autonomous.data))
@@ -339,51 +401,6 @@ class stern4most_dashboard_AI2(QWidget):
         self.visionmode_pub.publish(self.visionMode)
 
         self.rate.sleep()
-
-    def callback_ranking(self, msg):
-        r, s, total_time, last_sector_time = self.parse_ranking(msg.data)
-
-        self.round.setText('Round: ' + r)
-        self.round.resize(self.round.sizeHint())
-
-        self.sector.setText('Sector: ' + s)
-        self.sector.resize(self.sector.sizeHint())
-
-        self.total_time.setText('Total time: ' + total_time)
-        self.total_time.resize(self.total_time.sizeHint())
-
-        self.last_sector_time.setText('Last sector time: ' + last_sector_time)
-        self.last_sector_time.resize(self.last_sector_time.sizeHint())
-
-        self.rate.sleep()
-
-    def parse_ranking(self, data):
-        message = data.strip('[]()')
-        rospy.loginfo(message)
-
-        message = message.replace('\'', '')
-        rospy.loginfo(message)
-
-        ranking = message.replace(' ', '').split(',')
-        rospy.loginfo(ranking)
-
-        r = ranking[1]
-        s = ranking[2]
-        total_time = round(float(ranking[3]), 2)
-        min = int(total_time // 60)
-        sec = int(total_time % 60)
-        min = f'0{min}' if min < 10 else min
-        sec = f'0{sec}' if sec < 10 else sec
-        total_time = f'{min}:{sec}'
-
-        last_sector_time = round(float(ranking[4]), 2)
-        min = int(last_sector_time // 60)
-        sec = int(last_sector_time % 60)
-        min = f'0{min}' if min < 10 else min
-        sec = f'0{sec}' if sec < 10 else sec
-        last_sector_time = f'{min}:{sec}'
-
-        return r, s, str(total_time), str(last_sector_time)
 
 
 if __name__ == "__main__":
