@@ -31,16 +31,8 @@ class stern4most_dashboard_AI2(QWidget):
         super(stern4most_dashboard_AI2, self).__init__()
 
         self.bridge = CvBridge()
-        self.init_subscriber()
         self.rate = rospy.Rate(10)
-        self.vel = Twist()
-        self.is_autonomous = Bool()
-        self.sternformost = Bool()
-        self.recording = Bool()
-        self.visionMode = Bool()
-        self.AI = Bool()
-        self.AI.data = False
-        self.sternformost.data = False
+        self.init_subscriber()
 
         # ---- Subscribers ----
         self.ranking_sub = rospy.Subscriber('dashboard_ranking', String, self.callback_ranking)
@@ -49,21 +41,27 @@ class stern4most_dashboard_AI2(QWidget):
         # ---- Publishers ----
         self.controller_pub = rospy.Publisher('manual_controller', Twist, queue_size=10)
         rospy.loginfo('created publisher for topic manual_controller')
+        self.vel = Twist()
 
         self.manual_autonomous_pub = rospy.Publisher('manual_autonomous', Bool, queue_size=10)
         rospy.loginfo('created publisher for topic manual_autonomous')
+        self.is_autonomous = Bool()
 
         self.sternformost_pub = rospy.Publisher('sternformost', Bool, queue_size=10)
         rospy.loginfo('created publisher for topic sternformost')
+        self.sternformost = Bool()
 
         self.recording_pub = rospy.Publisher('record', Bool, queue_size=10)
         rospy.loginfo('created publisher for topic record')
+        self.recording = Bool()
 
         self.visionmode_pub = rospy.Publisher('visionmode', Bool, queue_size=10)
         rospy.loginfo('created publisher for topic visionmode')
+        self.visionMode = Bool()
 
         self.AI_pub = rospy.Publisher('drive_ai', Bool, queue_size=10)
         rospy.loginfo('created publisher for topic drive_ai')
+        self.AI = Bool()
 
         # Setup the GUI and start its threading
         self.init_gui()
@@ -218,7 +216,23 @@ class stern4most_dashboard_AI2(QWidget):
             raise Exception("Failed to convert to OpenCV image")
 
     def stop_button_clicked(self):
-        self.move_waffle(self.vel.linear.x * -1, self.vel.angular.z * -1)
+        self.is_autonomous.data = False 
+        rospy.loginfo('advertising to topic is_autonomous with value ' + str(self.is_autonomous.data))
+        self.manual_autonomous_pub.publish(self.is_autonomous)
+
+        self.sternformost.data = False
+        rospy.loginfo('advertising to topic sternformost with value ' + str(self.sternformost.data))
+        self.sternformost_pub.publish(self.sternformost)
+
+        self.AI.data = False
+        rospy.loginfo('advertising to topic drive_ai with value ' + str(self.AI.data))
+        self.AI_pub.publish(self.AI)
+
+        self.vel.linear.x = 0
+        self.vel.angular.z = 0
+
+        rospy.loginfo('Stopping Turtlebot...')
+        self.controller_pub.publish(self.vel)
 
     def forward_button_clicked(self):
         self.move_waffle(0.2, 0)
@@ -242,9 +256,15 @@ class stern4most_dashboard_AI2(QWidget):
         self.is_autonomous.data = False
         rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
         self.manual_autonomous_pub.publish(self.is_autonomous)
+
         self.sternformost.data = False
         rospy.loginfo('advertising to topic sternformost with value ' + str(self.sternformost.data))
         self.sternformost_pub.publish(self.sternformost)
+
+        self.AI.data = False
+        rospy.loginfo('advertising to topic drive_ai with value ' + str(self.AI.data))
+        self.AI_pub.publish(self.AI)
+
         if self.vel.linear.x + line_vel <= 0.22:
             self.vel.linear.x += line_vel
         else:
@@ -255,49 +275,69 @@ class stern4most_dashboard_AI2(QWidget):
             self.vel.angular.z += ang_vel
         else:
             self.vel.angular.z = 0.22
+
         rospy.loginfo('advertising to topic controller with linear x value ' + str(self.vel.linear.x) + ' and angular z value of ' + str(self.vel.angular.z))
         self.controller_pub.publish(self.vel)
+
         self.rate.sleep()
 
     def autonomous_button_clicked(self):
-        self.sternformost.data = False
-        self.is_autonomous.data = True
-        self.AI.data = False
+        self.is_autonomous.data = True        
         rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
         self.manual_autonomous_pub.publish(self.is_autonomous)
+
+        self.sternformost.data = False
         rospy.loginfo('advertising to topic sternformost with value ' + str(self.sternformost.data))
         self.sternformost_pub.publish(self.sternformost)
+
+        self.AI.data = False
+        rospy.loginfo('advertising to topic drive_ai with value ' + str(self.AI.data))
+        self.AI_pub.publish(self.AI)
+
         self.rate.sleep()
 
-    def sternformost_button_clicked(self):
-        self.sternformost.data = True
+    def sternformost_button_clicked(self):    
         self.is_autonomous.data = True
-        self.AI.data = False
         rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
         self.manual_autonomous_pub.publish(self.is_autonomous)
+
+        self.sternformost.data = True
         rospy.loginfo('advertising to topic sternformost with value ' + str(self.sternformost.data))
         self.sternformost_pub.publish(self.sternformost)
+
+        self.AI.data = False
+        rospy.loginfo('advertising to topic drive_ai with value ' + str(self.AI.data))
+        self.AI_pub.publish(self.AI)
+
         self.rate.sleep()
 
     def AI_button_clicked(self):
-        self.AI.data = True
         self.is_autonomous.data = True
         rospy.loginfo('advertising to topic manual_autonomous with value ' + str(self.is_autonomous.data))
         self.manual_autonomous_pub.publish(self.is_autonomous)
+
+        self.sternformost.data = False
+        rospy.loginfo('advertising to topic sternformost with value ' + str(self.sternformost.data))
+        self.sternformost_pub.publish(self.sternformost)
+        
+        self.AI.data = True
         rospy.loginfo('advertising to topic drive_ai with value ' + str(self.AI.data))
         self.AI_pub.publish(self.AI)
+
         self.rate.sleep()
 
     def recording_button_clicked(self):
         self.recording.data = True
         rospy.loginfo('advertising to topic record with value ' + str(self.recording.data))
         self.recording_pub.publish(self.recording)
+
         self.rate.sleep()
 
     def vision_button_clicked(self):
-        self.visionMode = True
-        rospy.loginfo('advertising to topic visionmode with value ' + str(self.visionMode))
+        self.visionMode.data = True
+        rospy.loginfo('advertising to topic visionmode with value ' + str(self.visionMode.data))
         self.visionmode_pub.publish(self.visionMode)
+
         self.rate.sleep()
 
     def callback_ranking(self, msg):
@@ -314,15 +354,19 @@ class stern4most_dashboard_AI2(QWidget):
 
         self.last_sector_time.setText('Last sector time: ' + last_sector_time)
         self.last_sector_time.resize(self.last_sector_time.sizeHint())
+
         self.rate.sleep()
 
     def parse_ranking(self, data):
         message = data.strip('[]()')
         rospy.loginfo(message)
+
         message = message.replace('\'', '')
         rospy.loginfo(message)
+
         ranking = message.replace(' ', '').split(',')
         rospy.loginfo(ranking)
+
         r = ranking[1]
         s = ranking[2]
         total_time = round(float(ranking[3]), 2)
