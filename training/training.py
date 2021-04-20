@@ -8,11 +8,11 @@ print('Setting UP')
 
 
 # STEP 1 - INITIALIZE DATA
-path = 'Data'
+path = 'drivingData'
 data = importDataInfo(path)
 
 # STEP 2 - VISUALIZE AND BALANCE DATA
-data = balanceData(data, display=False)
+data = balanceData(data, display=True)
 
 # STEP 3 - PREPARE FOR PROCESSING
 imagesPath, steerings = loadData(path, data)
@@ -33,11 +33,12 @@ print('Total Validation Images: ', len(xVal))
 model = createModel()
 
 # STEP 8 - TRAINNING
-history = model.fit(dataGen(xTrain, yTrain, 100, 1), steps_per_epoch=100, epochs=10, validation_data=dataGen(xVal, yVal, 50, 0), validation_steps=50)
+history = model.fit(dataGen(xTrain, yTrain, 250, 1), steps_per_epoch=250, epochs=25, validation_data=dataGen(xVal, yVal, 50, 0), validation_steps=50)
 
 # STEP 9 - SAVE THE MODEL
 model.save('model.h5')
 print('Model Saved')
+print('Images skipped: ' + str(getCounter()))
 
 # STEP 10 - PLOT THE RESULTS
 plt.plot(history.history['loss'])

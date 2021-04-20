@@ -1,3 +1,4 @@
+
 import os
 import pandas as pd
 import numpy as np
@@ -17,6 +18,8 @@ import random
 # STEP 1 - Initialisation of the data
 
 
+counter = [0]
+
 def getName(filePath):
     imgPathL = filePath.split('/')[-2:]
     imgPath = os.path.join(imgPathL[0], imgPathL[1])
@@ -27,7 +30,7 @@ def importDataInfo(path):
     columns = ['Center', 'Steering']
     numberOfFolders = len(os.listdir(path))//2
     data = pd.DataFrame()
-    for x in range(2):
+    for x in range(7):
         newData = pd.read_csv(os.path.join(path, f'log_{x}.csv'), names=columns)
         newData['Center'] = newData['Center'].apply(getName)
         data = data.append(newData, True)
@@ -40,8 +43,8 @@ def importDataInfo(path):
 
 
 def balanceData(data, display=True):
-    nBin = 31
-    samplesPerBin = 1000
+    nBin = 32
+    samplesPerBin = 800
     hist, bins = np.histogram(data['Steering'], nBin)
     if display:
         center = (bins[:-1] + bins[1:]) * 0.5
@@ -87,6 +90,8 @@ def loadData(path, data):
         if os.path.isfile(filepath):
             imagesPath.append(os.path.join(path, indexed_data[0]))
             steering.append(float(indexed_data[1]))
+        else:
+            counter[0] += 1
     imagesPath = np.asarray(imagesPath)
     steering = np.asarray(steering)
     return imagesPath, steering
@@ -166,3 +171,6 @@ def dataGen(imagesPath, steeringList, batchSize, trainFlag):
             imgBatch.append(img)
             steeringBatch.append(steering)
         yield(np.asarray(imgBatch), np.asarray(steeringBatch))
+
+def getCounter():
+    return counter
