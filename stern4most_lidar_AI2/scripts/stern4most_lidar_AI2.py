@@ -12,16 +12,17 @@ from std_msgs.msg import Bool
 class LaserListener():
     def __init__(self):
 
-         # The speed is set to a static value of 0.27. The maximum distance that will be considered 'close' is set to 1.
+        # The speed is set to a static value of 0.27. The maximum distance that will be considered 'close' is set to 1.
         # Angles with a value between 0 and 40 will be considered as angles to our left.
         # Angles with a value between 310 and 360 will be considered angles to our right.
+        self.BACKWARDS = False
         self.SPEED = -0.15 if self.BACKWARDS else 0.27
         self.MAX_DISTANCE = 2.5 if self.BACKWARDS else 1.0
         self.MIN_ANGLE_LEFT = 135 if self.BACKWARDS else 0
         self.MAX_ANGLE_LEFT = 180 if self.BACKWARDS else 45
         self.MIN_ANGLE_RIGHT = 180 if self.BACKWARDS else 315
         self.MAX_ANGLE_RIGHT = 225 if self.BACKWARDS else 360
-        self.BACKWARDS = False
+        
         # The publisher for the lidar_controller topic will publish Twist messages with a static linear.x value of 0.27.
         # The rate is set to 10.
         self.vel = Twist()

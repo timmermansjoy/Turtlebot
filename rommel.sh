@@ -41,8 +41,8 @@ then
     tmux join-pane -v -s 2 -t 1
     tmux join-pane -v -s 3 -t 1
     tmux join-pane -v -s 4 -t 1
-    tmux join-pane -h -s 5 -t 1
     tmux join-pane -v -s 6 -t 1
+    tmux join-pane -h -s 5 -t 1
 
     # start referee system
     tmux new-window -t $SESSION:2 -n 'referee_service'
