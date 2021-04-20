@@ -24,7 +24,7 @@ class AI_driver:
         self.bridge = CvBridge()
         
         # Choose model and get its location
-        self.model_name = 'second'
+        self.model_name = 'nikki_first'
         self.model_path = self.find_model(self.model_name)
 
         # load model
@@ -50,6 +50,7 @@ class AI_driver:
         finally:
             self.imageLock.release()
         self.main()
+
 
     # ---- Helpers ----
 
