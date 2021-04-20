@@ -251,10 +251,6 @@ class stern4most_dashboard_AI2(QWidget):
             self.vel.linear.x = 0.22
         if self.vel.linear.x < -0.2:
             self.vel.linear.x = -0.2
-        self.vel.linear.y = 0
-        self.vel.linear.z = 0
-        self.vel.angular.x = 0
-        self.vel.angular.y = 0
         if self.vel.angular.z + ang_vel < 0.22:
             self.vel.angular.z += ang_vel
         else:
@@ -271,6 +267,7 @@ class stern4most_dashboard_AI2(QWidget):
         self.manual_autonomous_pub.publish(self.is_autonomous)
         rospy.loginfo('advertising to topic sternformost with value ' + str(self.sternformost.data))
         self.sternformost_pub.publish(self.sternformost)
+        self.rate.sleep()
 
     def sternformost_button_clicked(self):
         self.sternformost.data = True
@@ -280,6 +277,7 @@ class stern4most_dashboard_AI2(QWidget):
         self.manual_autonomous_pub.publish(self.is_autonomous)
         rospy.loginfo('advertising to topic sternformost with value ' + str(self.sternformost.data))
         self.sternformost_pub.publish(self.sternformost)
+        self.rate.sleep()
 
     def AI_button_clicked(self):
         self.AI.data = True
@@ -288,16 +286,19 @@ class stern4most_dashboard_AI2(QWidget):
         self.manual_autonomous_pub.publish(self.is_autonomous)
         rospy.loginfo('advertising to topic drive_ai with value ' + str(self.AI.data))
         self.AI_pub.publish(self.AI)
+        self.rate.sleep()
 
     def recording_button_clicked(self):
         self.recording.data = True
         rospy.loginfo('advertising to topic record with value ' + str(self.recording.data))
         self.recording_pub.publish(self.recording)
+        self.rate.sleep()
 
     def vision_button_clicked(self):
         self.visionMode = True
         rospy.loginfo('advertising to topic visionmode with value ' + str(self.visionMode))
         self.visionmode_pub.publish(self.visionMode)
+        self.rate.sleep()
 
     def callback_ranking(self, msg):
         r, s, total_time, last_sector_time = self.parse_ranking(msg.data)
@@ -313,8 +314,7 @@ class stern4most_dashboard_AI2(QWidget):
 
         self.last_sector_time.setText('Last sector time: ' + last_sector_time)
         self.last_sector_time.resize(self.last_sector_time.sizeHint())
-
-    # [AI2,1,0,0,0]
+        self.rate.sleep()
 
     def parse_ranking(self, data):
         message = data.strip('[]()')
