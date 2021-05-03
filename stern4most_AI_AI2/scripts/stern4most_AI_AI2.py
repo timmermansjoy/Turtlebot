@@ -18,13 +18,13 @@ from sensor_msgs.msg import Image
 
 class AI_driver:
     def __init__(self):
-        self.steeringSen = 1.4
+        self.steeringSen = 1.3
         self.image = None
         self.imageLock = Lock()
         self.bridge = CvBridge()
-        
+
         # Choose model and get its location
-        self.model_name = 'nikki_fourth'
+        self.model_name = 'pspace'
         self.model_path = self.find_model(self.model_name)
 
         # load model
@@ -40,7 +40,6 @@ class AI_driver:
         self.vel = Twist()
         self.vel.linear.x = 0.22
 
-
     # ---- Callbacks ----
 
     def callback_image_raw(self, data):
@@ -50,7 +49,6 @@ class AI_driver:
         finally:
             self.imageLock.release()
         self.main()
-
 
     # ---- Helpers ----
 
