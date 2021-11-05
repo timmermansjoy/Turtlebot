@@ -22,7 +22,7 @@ class LaserListener():
         self.MAX_ANGLE_LEFT = 180 if self.BACKWARDS else 45
         self.MIN_ANGLE_RIGHT = 180 if self.BACKWARDS else 315
         self.MAX_ANGLE_RIGHT = 225 if self.BACKWARDS else 360
-        
+
         # The publisher for the lidar_controller topic will publish Twist messages with a static linear.x value of 0.27.
         # The rate is set to 10.
         self.vel = Twist()
@@ -39,16 +39,12 @@ class LaserListener():
         self.sternformost_sub = rospy.Subscriber("sternformost", Bool, self.callback_sternformost)
         rospy.loginfo("subscribed to topic sternformost")
 
-
         # ---- Publishers ----
 
         # To send the info, calculated in this class, back to the pilot node, the lidar node has to have a publisher for the lidar_controller.
         # It will publish a Twist message, with the queue_size set to 10.
         self.lidar_pub = rospy.Publisher("lidar_controller", Twist, queue_size=10)
         rospy.loginfo("Created publisher for topic lidar_controller")
-
-       
-
 
     # ---- Callbacks----
 
@@ -136,9 +132,8 @@ class LaserListener():
     def callback_sternformost(self, data):
         self.BACKWARDS = data.data
 
-
     # ---- Helpers ----
-    
+
     def publish(self, ang_vel):
         """
         This method takes an int, sets it as the angular.z value of the Twist message that was declared at the top of this file, and publishes it to the lidar_controller topic.

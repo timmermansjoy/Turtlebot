@@ -50,8 +50,8 @@ class AI:
         rospy.loginfo('subscribed to topic manual_controller')
         self.STEERING = Twist()
 
-
     # ---- Callbacks ----
+
     def callback_image_raw(self, data):
         self.imageLock.acquire()
         try:
@@ -94,7 +94,7 @@ class AI:
                 self.imageLock.release()
             image_cv = cv2.resize(image_cv, dsize=(228, 156), interpolation=cv2.INTER_CUBIC)
 
-        if self.RECORD:  
+        if self.RECORD:
             if self.recording_step == 0:
                 rospy.loginfo('Recording ...')
                 self.recording_step += 1
