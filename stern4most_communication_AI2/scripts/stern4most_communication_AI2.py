@@ -9,7 +9,7 @@ player_name = "AI2"
 
 class stern4most_communication_AI2:
     def __init__(self):
-        
+
         # ---- Subscribers ----
         self.game_on_subscriber = rospy.Subscriber('game_on', String, self.callback_game_on)
         rospy.loginfo('subscribed to topic game_on')
@@ -36,9 +36,9 @@ class stern4most_communication_AI2:
         self.sector_update = rospy.ServiceProxy('status_update', SectorUpdate)
 
         self.sector = 0 if self.BACKWARDS else 1
-        
 
     # ---- Callbacks ----
+
     def callback_ranking(self, msg):
         self.ranking_pub.publish(msg)
 
@@ -61,7 +61,7 @@ class stern4most_communication_AI2:
             self.start_message.data = False
             rospy.loginfo('WRONG SECTOR - STOPPING TURTLEBOT')
             self.drive_ai_pub.publish(self.start_message)
-    
+
     def callback_sternformost(self, msg):
         self.BACKWARDS = msg.data
 

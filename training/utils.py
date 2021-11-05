@@ -20,6 +20,7 @@ import random
 
 counter = [0]
 
+
 def getName(filePath):
     imgPathL = filePath.split('/')[-2:]
     imgPath = os.path.join(imgPathL[0], imgPathL[1])
@@ -171,6 +172,7 @@ def dataGen(imagesPath, steeringList, batchSize, trainFlag):
             imgBatch.append(img)
             steeringBatch.append(steering)
         yield(np.asarray(imgBatch), np.asarray(steeringBatch))
+
 
 def getCounter():
     return counter

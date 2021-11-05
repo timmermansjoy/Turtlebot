@@ -106,7 +106,6 @@ class stern4most_dashboard_AI2(QWidget):
         self.gui_timer.start(GUI_UPDATE_PERIOD)
         self.gui_timer.timeout.connect(self.update_image_on_gui)
 
-
     # ---- Callbacks ----
 
     def callback_image_raw(self, image):
@@ -116,7 +115,7 @@ class stern4most_dashboard_AI2(QWidget):
             self.received_new_data = True
         finally:
             self.ros_image_lock.release()
-    
+
     def callback_ranking(self, msg):
         r, s, total_time, last_sector_time = self.parse_ranking(msg.data)
 
@@ -133,11 +132,10 @@ class stern4most_dashboard_AI2(QWidget):
         self.last_sector_time.resize(self.last_sector_time.sizeHint())
 
         self.rate.sleep()
-    
 
     # ---- Helpers ----
-    
-    def create_buttons(self): 
+
+    def create_buttons(self):
         self.forward_button = QPushButton("Forward")
         self.forward_button.clicked.connect(self.forward_button_clicked)
         self.button_layout.addWidget(self.forward_button, 0, 1)
@@ -185,7 +183,6 @@ class stern4most_dashboard_AI2(QWidget):
         self.AI_button = QPushButton("AI")
         self.AI_button.clicked.connect(self.AI_button_clicked)
         self.button_layout.addWidget(self.AI_button, 4, 1)
-
 
     def create_labels(self):
         self.player_name = QtWidgets.QLabel()
@@ -274,9 +271,8 @@ class stern4most_dashboard_AI2(QWidget):
         except CvBridgeError as error:
             raise Exception("Failed to convert to OpenCV image")
 
-
     # ---- Button Handlers ----
-    
+
     def stop_button_clicked(self):
         self.is_autonomous.data = False
         rospy.loginfo('advertising to topic is_autonomous with value ' + str(self.is_autonomous.data))

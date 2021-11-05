@@ -25,7 +25,7 @@ class Stern4most_vision_AI2:
         # ---- Initial variables ----
         self.image = None
         self.gotYellow = False
-        
+
         self.imageLock = Lock()
         self.bridge = CvBridge()
         self.rate = rospy.Rate(10)
@@ -43,7 +43,6 @@ class Stern4most_vision_AI2:
         rospy.loginfo('subscribed to topic visionmode')
         self.visionMode = 0
 
-
         # ---- Publishers ----
         self.controller_pub = rospy.Publisher('autonomous_controller', Twist, queue_size=10)
         rospy.loginfo('created publisher for topic autonomous_controller')
@@ -54,7 +53,6 @@ class Stern4most_vision_AI2:
         self.sector_crossed = Bool()
         self.sector_crossed.data = True
 
-
     # ---- Callbacks ----
 
     def callback_redraw(self, event):
@@ -64,7 +62,7 @@ class Stern4most_vision_AI2:
         - Checks if we have driven over a checkpoint and publishes that to the referee
         returns: Nothing
         """
-        
+
         # Preprocess the image
         if self.image is not None:
             self.imageLock.acquire()
@@ -106,7 +104,6 @@ class Stern4most_vision_AI2:
         if msg.data:
             self.visionMode = (self.visionMode + 1) % 3
 
-
     # ---- Helpers ----
 
     def convert_ros_to_opencv(self, ros_image):
@@ -115,7 +112,7 @@ class Stern4most_vision_AI2:
             return cv_image
         except CvBridgeError as error:
             raise Exception("Failed to convert to OpenCV image")
-        
+
     def publish(self, ang_val):
         self.vel.angular.z = ang_val
         self.vel.linear.x = 0.27
@@ -123,7 +120,6 @@ class Stern4most_vision_AI2:
             self.vel.linear.x = -0.1
         rospy.loginfo('publishing to topic autonomous_controller with x value: ' + str(self.vel.linear.x) + ' and z value: ' + str(self.vel.angular.z))
         self.controller_pub.publish(self.vel)
-
 
 
 if __name__ == '__main__':

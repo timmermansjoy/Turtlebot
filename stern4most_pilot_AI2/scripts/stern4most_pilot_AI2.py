@@ -39,7 +39,6 @@ class Pilot:
         self.stop_vel = Twist()
         self.object_detected = False
 
-
     # ---- Callbacks ----
 
     def callback_autonomous_controller(self, msg):
@@ -78,7 +77,6 @@ class Pilot:
             rospy.loginfo('publishing to pilot from ai_controller')
             self.publish_to_pilot(msg)
 
-    
     # ---- Helpers ----
 
     def publish_to_pilot(self, msg):
